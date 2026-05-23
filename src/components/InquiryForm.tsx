@@ -7,6 +7,7 @@ interface InquiryFormProps {
   prefilledGoal?: string;
   prefilledBmi?: string;
   prefilledCalories?: number;
+  prefilledAudit?: string;
 }
 
 const GOAL_OPTIONS = [
@@ -33,7 +34,7 @@ const INJURY_OPTIONS = [
   { value: 'yes', label: 'Yes, I have past/current injuries (please detail below)' },
 ];
 
-export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalories }: InquiryFormProps) {
+export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalories, prefilledAudit }: InquiryFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -64,6 +65,18 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalo
       setFormData((prev) => ({ ...prev, targetCalories: String(prefilledCalories) }));
     }
   }, [prefilledCalories]);
+
+  useEffect(() => {
+    if (prefilledAudit) {
+      setFormData((prev) => {
+        const cleanMessage = prev.message.replace(/^\[Physique Audit: [^\]]+\]\s*/, '');
+        return {
+          ...prev,
+          message: `${prefilledAudit} ${cleanMessage}`.trim()
+        };
+      });
+    }
+  }, [prefilledAudit]);
 
   const [submitting, setSubmitting] = useState(false);
   const [succeeded, setSucceeded] = useState(false);
