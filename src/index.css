@@ -1,9 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,100..900;1,100..900&family=Chivo:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* ─── Kinetic Performance System Design Tokens ─── */
 @theme {
-  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Chivo", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Anybody", ui-sans-serif, system-ui, sans-serif;
+
+  --color-lime-accent: #b8f600;
+  --color-bg-base: #030303;
+  --color-surface: #141313;
+  --color-surface-low: #1c1b1b;
+  --color-surface-mid: #201f1f;
+  --color-surface-high: #2a2a2a;
+  --color-surface-bright: #3a3939;
+  --color-outline: #8d9479;
+  --color-outline-variant: #434933;
+}
+
+/* ─── Base Reset ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 html {
@@ -13,21 +30,180 @@ html {
 
 body {
   font-family: var(--font-sans);
-  color: #f4f4f5;
+  color: #e5e2e1;
   background-color: #030303;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Custom scrollbar for supreme dark look */
+/* ─── Display / Headline Font ─── */
+.font-display {
+  font-family: "Anybody", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ─── Custom Scrollbar ─── */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: #0e0e0e;
 }
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
-  border-radius: 4px;
+  background: #353434;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #bfff00;
+}
+
+/* ─── Neon Glow Utilities ─── */
+.glow-lime {
+  box-shadow: 0 0 20px rgba(191, 255, 0, 0.2), 0 0 40px rgba(191, 255, 0, 0.08);
+}
+
+.glow-lime-sm {
+  box-shadow: 0 0 12px rgba(191, 255, 0, 0.15);
+}
+
+.glow-lime-lg {
+  box-shadow: 0 0 40px rgba(191, 255, 0, 0.25), 0 0 80px rgba(191, 255, 0, 0.1);
+}
+
+.text-glow-lime {
+  text-shadow: 0 0 20px rgba(191, 255, 0, 0.5);
+}
+
+/* ─── Glassmorphism ─── */
+.glass {
+  background: rgba(20, 19, 19, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(26, 26, 26, 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-card-lime, .glass-card-active {
+  background: rgba(20, 19, 19, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid #b8f600;
+  box-shadow: 0 0 30px rgba(184, 246, 0, 0.06), inset 0 0 30px rgba(184, 246, 0, 0.02);
+}
+
+.neon-text {
+  text-shadow: 0 0 20px rgba(184, 246, 0, 0.5);
+}
+
+.neon-btn {
+  background: linear-gradient(90deg, #b8f600 0%, #8ebd00 100%);
+  box-shadow: 0 0 20px rgba(184, 246, 0, 0.2);
+  color: #030303;
+}
+
+.ghost-btn {
+  border: 1px solid #b8f600;
+  color: #b8f600;
+}
+
+.input-glow:focus {
+  box-shadow: 0 2px 10px rgba(184, 246, 0, 0.3);
+  border-bottom-color: #b8f600;
+}
+
+/* ─── Blueprint Grid Overlay ─── */
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(191, 255, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(191, 255, 0, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ─── Section Header Badge ─── */
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #bfff00;
+  background: rgba(191, 255, 0, 0.06);
+  border: 1px solid rgba(191, 255, 0, 0.2);
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+}
+
+/* ─── Lime Gradient Text ─── */
+.gradient-text-lime {
+  background: linear-gradient(135deg, #ffffff 0%, #c3caac 40%, #bfff00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Animated Pulse Dot ─── */
+@keyframes pulse-lime {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(191, 255, 0, 0.4); }
+  50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(191, 255, 0, 0); }
+}
+
+.pulse-lime {
+  animation: pulse-lime 2s ease-in-out infinite;
+}
+
+/* ─── Stat Bar Animation ─── */
+@keyframes fill-bar {
+  from { width: 0%; }
+  to { width: var(--target-width); }
+}
+
+.animate-fill {
+  animation: fill-bar 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ─── Orb Glow Background ─── */
+.orb-lime {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(191, 255, 0, 0.12) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+/* ─── Input Focus Lime ─── */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: rgba(191, 255, 0, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(191, 255, 0, 0.08);
+}
+
+/* ─── Hover Float ─── */
+.hover-float {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.hover-float:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Lime Border Gradient ─── */
+.border-gradient-lime {
+  border: 1px solid transparent;
+  background: linear-gradient(#141313, #141313) padding-box,
+              linear-gradient(135deg, #bfff00, rgba(191,255,0,0.1)) border-box;
+}
+
+/* ─── Section divider line ─── */
+.divider-lime {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(191, 255, 0, 0.3), transparent);
 }

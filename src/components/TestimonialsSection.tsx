@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Star, Quote } from 'lucide-react';
+import { Star, Quote, TrendingUp } from 'lucide-react';
 
 const TESTIMONIALS = [
   {
@@ -11,6 +11,7 @@ const TESTIMONIALS = [
     rating: 5,
     before: '28% BF',
     after: '11% BF',
+    avatar: 'R',
   },
   {
     name: 'Arjun S.',
@@ -21,6 +22,7 @@ const TESTIMONIALS = [
     rating: 5,
     before: '68kg',
     after: '76kg (lean)',
+    avatar: 'A',
   },
   {
     name: 'Vikram P.',
@@ -31,38 +33,42 @@ const TESTIMONIALS = [
     rating: 5,
     before: '18% BF',
     after: '8.6% BF',
+    avatar: 'V',
   },
 ];
 
 export default function TestimonialsSection() {
   return (
-    <div id="testimonials-section" className="space-y-12">
-      <div className="text-center max-w-xl mx-auto space-y-3">
-        <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">
+    <div id="testimonials-section" className="space-y-14">
+      {/* Section Header */}
+      <div className="text-center max-w-xl mx-auto space-y-4">
+        <span className="section-badge">
+          <TrendingUp className="h-3 w-3" />
           Client Results
         </span>
-        <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-          REAL TRANSFORMATIONS
+        <h2 className="font-display text-4xl md:text-5xl font-black text-white tracking-[-0.03em] uppercase">
+          Real Transformations
         </h2>
-        <p className="text-zinc-400 text-sm leading-relaxed">
+        <p className="text-[#8d9479] text-sm leading-relaxed">
           Not influencer selfies. These are verified client outcomes from individuals who committed to the science.
         </p>
       </div>
 
+      {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {TESTIMONIALS.map((t, idx) => (
           <motion.div
             key={idx}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: idx * 0.1 }}
-            className="relative bg-zinc-950 border border-zinc-800 rounded-3xl p-6 flex flex-col justify-between hover:border-zinc-700 transition-colors"
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, delay: idx * 0.12 }}
+            className="glass-card-lime rounded-3xl p-7 flex flex-col justify-between hover-float group"
           >
             {/* Quote icon */}
-            <Quote className="absolute top-5 right-5 h-6 w-6 text-zinc-800" />
+            <Quote className="absolute top-5 right-5 h-5 w-5 text-[rgba(191,255,0,0.15)] group-hover:text-[rgba(191,255,0,0.3)] transition-colors" />
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               {/* Stars */}
               <div className="flex gap-1">
                 {Array.from({ length: t.rating }).map((_, i) => (
@@ -71,32 +77,32 @@ export default function TestimonialsSection() {
               </div>
 
               {/* Quote */}
-              <p className="text-zinc-300 text-sm leading-relaxed">"{t.quote}"</p>
+              <p className="text-[#c3caac] text-sm leading-relaxed">"{t.quote}"</p>
 
               {/* Before → After */}
-              <div className="flex items-center gap-3 bg-zinc-900/60 border border-zinc-800 rounded-xl p-3">
+              <div className="flex items-center gap-3 bg-[rgba(0,0,0,0.3)] border border-[rgba(191,255,0,0.1)] rounded-xl p-3">
                 <div className="text-center flex-1">
-                  <span className="text-[9px] font-mono text-zinc-500 uppercase block mb-0.5">Before</span>
-                  <span className="text-sm font-bold font-mono text-zinc-400">{t.before}</span>
+                  <span className="text-[9px] font-mono text-[#8d9479] uppercase tracking-widest block mb-1">Before</span>
+                  <span className="text-sm font-bold font-mono text-[#8d9479]">{t.before}</span>
                 </div>
-                <div className="h-px flex-1 bg-gradient-to-r from-zinc-700 via-[#bfff00] to-zinc-700" />
+                <div className="h-px flex-1 bg-gradient-to-r from-[rgba(255,255,255,0.1)] via-[#bfff00] to-[rgba(255,255,255,0.1)]" />
                 <div className="text-center flex-1">
-                  <span className="text-[9px] font-mono text-zinc-500 uppercase block mb-0.5">After</span>
+                  <span className="text-[9px] font-mono text-[#8d9479] uppercase tracking-widest block mb-1">After</span>
                   <span className="text-sm font-bold font-mono text-[#bfff00]">{t.after}</span>
                 </div>
               </div>
             </div>
 
             {/* Client Info */}
-            <div className="mt-5 pt-4 border-t border-zinc-900 flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-white text-sm font-mono">
-                {t.name.charAt(0)}
+            <div className="mt-6 pt-5 border-t border-[rgba(191,255,0,0.1)] flex items-center gap-3">
+              <div className="h-9 w-9 rounded-full bg-[rgba(191,255,0,0.1)] border border-[rgba(191,255,0,0.25)] flex items-center justify-center font-black text-[#bfff00] text-sm font-mono">
+                {t.avatar}
               </div>
-              <div>
-                <p className="text-xs font-semibold text-white">{t.name}</p>
-                <p className="text-[10px] text-zinc-500">{t.role}</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-white">{t.name}</p>
+                <p className="text-[10px] text-[#8d9479] truncate">{t.role}</p>
               </div>
-              <span className="ml-auto text-[10px] font-mono font-bold text-[#bfff00] bg-lime-950/30 border border-lime-800/30 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-mono font-bold text-[#bfff00] bg-[rgba(191,255,0,0.06)] border border-[rgba(191,255,0,0.15)] px-2.5 py-1 rounded-full shrink-0">
                 {t.result}
               </span>
             </div>

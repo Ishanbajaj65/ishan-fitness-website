@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Activity, Dumbbell, Zap, ChevronRight, MessageCircle, Instagram } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Instagram, MessageCircle, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import MacroCalculator from './components/MacroCalculator';
 import InquiryForm from './components/InquiryForm';
 import ProgramsSection from './components/ProgramsSection';
@@ -11,8 +12,18 @@ import { HERO_COPY, ABOUT_COPY } from './fitnessData';
 export default function App() {
   const [prefilledGoal, setPrefilledGoal] = useState<string | undefined>(undefined);
   const [prefilledCalories, setPrefilledCalories] = useState<number | undefined>(undefined);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const scrollToInquiry = () => {
+    setMobileNavOpen(false);
     document.getElementById('intake-portal')?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -31,235 +42,339 @@ export default function App() {
     }, 100);
   };
 
+  const navLinks = [
+    { href: '#philosophy', label: 'Philosophy' },
+    { href: '#testimonials-section', label: 'Results' },
+    { href: '#blueprints', label: 'Blueprints' },
+    { href: '#pricing-section', label: 'Pricing' },
+    { href: '#calibrator', label: 'Calibrator' },
+    { href: '#faq-section', label: 'FAQs' },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#030303] text-zinc-100 font-sans overflow-x-hidden">
-
+    <div className="min-h-screen text-[#e5e2e1] bg-[#030303] bg-grid-blueprint antialiased flex flex-col relative overflow-x-hidden">
       {/* ── HEADER ── */}
-      <header className="sticky top-0 z-30 bg-[#030303]/80 backdrop-blur-md border-b border-zinc-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <header className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-surface-dim/80 backdrop-blur-xl border-b border-white/5 shadow-[0_0_30px_rgba(184,246,0,0.05)]'
+          : 'bg-transparent border-b border-transparent'
+      }`}>
+        <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-6 max-w-container-max mx-auto">
           {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <div className="h-10 w-10 bg-[#bfff00] rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(191,255,0,0.15)]">
-              <Dumbbell className="h-5 w-5 text-black stroke-[2.5]" />
+          <a href="#" className="flex items-center gap-3.5 group">
+            <div className="h-10 w-10 bg-[#b8f600] rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(184,246,0,0.3)] transition-all group-hover:scale-105">
+              <span className="material-symbols-outlined text-black font-bold">fitness_center</span>
             </div>
-            <div>
-              <span className="text-md font-extrabold text-white tracking-widest font-mono">IB.COACH</span>
-              <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">PHYSIQUE STRATEGIST</p>
+            <div className="flex flex-col">
+              <span className="font-headline-lg-mobile md:font-headline-lg text-[#b8f600] tracking-tighter uppercase text-xl md:text-2xl font-black">
+                IB.COACH
+              </span>
+              <span className="text-[9px] font-mono text-[#8d9479] uppercase tracking-widest -mt-1">Physique Strategist</span>
             </div>
-          </div>
+          </a>
 
-          {/* Nav */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-mono tracking-widest uppercase">
-            <a href="#about-section" className="text-zinc-400 hover:text-white transition-colors">Philosophy</a>
-            <a href="#testimonials-section" className="text-zinc-400 hover:text-white transition-colors">Results</a>
-            <a href="#programs-section" className="text-zinc-400 hover:text-white transition-colors">Blueprints</a>
-            <a href="#pricing-section" className="text-zinc-400 hover:text-white transition-colors">Pricing</a>
-            <a href="#calculator-section" className="text-zinc-400 hover:text-white transition-colors">Calibrator</a>
-            <a href="#faq-section" className="text-zinc-400 hover:text-white transition-colors">FAQs</a>
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex gap-8">
+            {navLinks.map(link => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="text-on-surface/70 font-label-sm hover:text-primary-fixed transition-colors font-mono tracking-widest text-[11px] uppercase"
+              >
+                {link.label}
+              </a>
+            ))}
           </nav>
 
-          {/* CTA */}
-          <button
-            onClick={scrollToInquiry}
-            className="bg-[#bfff00] hover:bg-white text-black font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(191,255,0,0.12)] hidden sm:inline-flex items-center gap-1.5"
-          >
-            APPLY NOW
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
+          {/* Header CTA */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={scrollToInquiry}
+              className="hidden sm:block neon-btn px-6 py-3 font-label-sm font-bold uppercase rounded hover:scale-95 transition-transform font-mono text-[11px]"
+            >
+              APPLY NOW
+            </button>
+            {/* Mobile menu toggle */}
+            <button
+              className="md:hidden text-[#b8f600] p-1"
+              onClick={() => setMobileNavOpen(!mobileNavOpen)}
+              aria-label="Toggle navigation"
+            >
+              <span className="material-symbols-outlined text-3xl">menu</span>
+            </button>
+          </div>
         </div>
-      </header>
 
-      <main className="space-y-24 md:space-y-36 pb-24 pt-10">
-
-        {/* ── 1. HERO ── */}
-        <section id="hero" className="relative px-4 sm:px-6 lg:px-8">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#bfff00]/5 rounded-full blur-[120px] pointer-events-none" />
-
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center space-y-6 max-w-4xl mx-auto">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-zinc-950 border border-zinc-800 rounded-full">
-                <span className="h-2 w-2 rounded-full bg-[#bfff00] animate-pulse" />
-                <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-zinc-300">
-                  {HERO_COPY.accentLabel}
-                </span>
-              </div>
-
-              {/* Headline */}
-              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-[0.9] uppercase">
-                YOUR PHYSIQUE{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-400 to-lime-400">
-                  IS A SCIENCE.
-                </span>{' '}
-                <br />
-                <span className="text-[#bfff00]">STOP GUESSING.</span>
-              </h1>
-
-              {/* Sub */}
-              <p className="text-zinc-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                {HERO_COPY.subHeadline}
-              </p>
-
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4 max-w-md mx-auto">
+        {/* Mobile Nav */}
+        <AnimatePresence>
+          {mobileNavOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden bg-surface-dim/95 backdrop-blur-xl border-t border-white/5 overflow-hidden"
+            >
+              <div className="px-6 py-5 space-y-4">
+                {navLinks.map(link => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileNavOpen(false)}
+                    className="block text-xs font-mono text-on-surface/80 hover:text-[#b8f600] uppercase tracking-widest transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ))}
                 <button
                   onClick={scrollToInquiry}
-                  className="flex-1 bg-[#bfff00] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 group"
+                  className="w-full neon-btn py-3 font-label-sm font-bold uppercase rounded text-xs tracking-wider mt-2"
                 >
-                  <span>{HERO_COPY.primaryCTA}</span>
-                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  APPLY NOW
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      <main className="flex-grow z-10">
+        {/* ── 1. HERO SECTION ── */}
+        <section
+          ref={heroRef}
+          id="hero"
+          className="relative w-full min-h-[90vh] flex flex-col justify-center items-start px-margin-mobile md:px-margin-desktop py-20 bg-cover bg-center"
+          style={{
+            backgroundImage: "linear-gradient(rgba(3, 3, 3, 0.75), rgba(3, 3, 3, 0.95)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_rLbOvmnpv8V1LkODERzNnwNF77kqEOVBA3GEFrGSydTAphuH3zorxk_wKp5TgaxiaIxWdxiWjJt6bv8rW-YNz3Ot62UbXFllF1edM4TehxPwbxR6dQ_8NsqjKkjbBSh6bhSyKeVzFPZ9kQPBrmNclgYUUc4gvgOvfD5KK-Pror7PUHuLmpWInq2m5GzcUGwu6zy6bLcaYmoa_pdgLGHQs35naDldO2BtEEJw2FcyQyr6noHhawY9L8JkYAsUFRnMgBY4shVuFkY')"
+          }}
+        >
+          <div className="max-w-container-max mx-auto w-full z-10 text-left">
+            <div className="max-w-4xl space-y-8">
+              {/* Main Headline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-black text-white leading-[0.9] tracking-[-0.04em] uppercase"
+              >
+                YOUR PHYSIQUE IS A <span className="text-[#b8f600] neon-text">SCIENCE</span>.
+                <br />
+                STOP GUESSING.
+              </motion.h1>
+
+              {/* Proof Metrics Grid */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="flex flex-wrap gap-6 text-left"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-[#b8f600] text-xl">verified</span>
+                  <span className="font-label-sm text-xs text-on-surface uppercase font-mono tracking-wider">
+                    8+ Years Coaching
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-[#b8f600] text-xl">groups</span>
+                  <span className="font-label-sm text-xs text-on-surface uppercase font-mono tracking-wider">
+                    200+ Clients Transformed
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-[#b8f600] text-xl">target</span>
+                  <span className="font-label-sm text-xs text-on-surface uppercase font-mono tracking-wider">
+                    94% Goal Achievement
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-[#b8f600] text-xl">percent</span>
+                  <span className="font-label-sm text-xs text-on-surface uppercase font-mono tracking-wider">
+                    Single-Digit BF%
+                  </span>
+                </div>
+              </motion.div>
+
+              {/* CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex flex-col sm:flex-row gap-4 pt-4"
+              >
+                <button
+                  onClick={scrollToInquiry}
+                  className="neon-btn px-8 py-4 font-label-sm font-bold uppercase rounded flex items-center justify-center gap-2 hover:scale-95 transition-transform font-mono text-xs tracking-wider"
+                >
+                  START TRANSFORMATION
+                  <span className="material-symbols-outlined text-sm font-bold">arrow_forward</span>
                 </button>
                 <a
-                  href="#programs-section"
-                  className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm py-4 rounded-xl border border-zinc-800 transition-all uppercase tracking-wider flex items-center justify-center"
+                  href="#blueprints"
+                  className="ghost-btn px-8 py-4 font-label-sm uppercase rounded bg-surface/50 backdrop-blur-md flex items-center justify-center gap-2 hover:bg-primary-fixed/10 transition-colors font-mono text-xs tracking-wider text-center"
                 >
-                  {HERO_COPY.secondaryCTA}
+                  VIEW BLUEPRINTS
                 </a>
-              </div>
-            </div>
-
-            {/* Proof metrics */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto mt-16 md:mt-24 border-t border-b border-zinc-900 py-8 md:py-12 bg-zinc-950/20 backdrop-blur-sm rounded-3xl px-6">
-              {HERO_COPY.metrics.map((m) => (
-                <div key={m.label} className="text-center space-y-1">
-                  <span className="text-3xl md:text-4xl font-extrabold font-mono text-white block tracking-tighter">{m.value}</span>
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">{m.label}</span>
-                </div>
-              ))}
+              </motion.div>
             </div>
           </div>
         </section>
 
-        {/* ── 2. ABOUT ── */}
-        <section id="about-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-zinc-925 border border-zinc-900 rounded-3xl p-6 md:p-12 relative overflow-hidden" style={{ backgroundColor: '#101014' }}>
-            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#bfff00]/5 rounded-full blur-[100px] pointer-events-none" />
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 items-start">
-              {/* Biography */}
-              <div className="lg:col-span-7 space-y-6">
-                <div className="space-y-2">
-                  <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold px-2 py-0.5 bg-lime-950/30 border border-lime-800/30 rounded">
-                    Proven in the Iron Trenches
+        {/* ── 2. ABOUT SECTION (PHILOSOPHY) ── */}
+        <section className="px-margin-mobile md:px-margin-desktop py-24 max-w-container-max mx-auto" id="philosophy">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center text-left">
+            <div className="glass-card rounded-xl p-8 relative overflow-hidden">
+              <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary-fixed/5 rounded-full blur-3xl" />
+              <h2 className="font-display text-4xl md:text-5xl text-[#b8f600] uppercase mb-6 font-black tracking-tight">
+                MEET ISHAN
+              </h2>
+              <p className="font-body-md text-base text-on-surface/80 leading-relaxed mb-6">
+                Elite physique transformation requires precision, not guesswork. My methodology relies on optimizing hypertrophy pathways and meticulous macro tracking. We don't just train; we engineer results.
+              </p>
+              <ul className="space-y-4 font-label-sm text-xs font-mono tracking-wider text-on-surface">
+                <li className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[#b8f600]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    check_circle
                   </span>
-                  <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">{ABOUT_COPY.title}</h2>
-                  <p className="text-xs md:text-sm font-mono text-zinc-400 tracking-wider font-semibold">{ABOUT_COPY.subtitle}</p>
-                </div>
-
-                <p className="text-sm md:text-base text-[#bfff00] font-semibold leading-relaxed border-l-2 border-[#bfff00] pl-4">
-                  {ABOUT_COPY.intro}
-                </p>
-
-                <div className="space-y-4 text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                  {ABOUT_COPY.paragraphs.map((p, i) => <p key={i}>{p}</p>)}
-                </div>
-              </div>
-
-              {/* Credentials card */}
-              <div className="lg:col-span-5 bg-zinc-950 border border-zinc-800 p-6 md:p-8 rounded-2xl space-y-6">
-                <div>
-                  <h3 className="text-sm font-mono text-[#bfff00] uppercase tracking-widest font-extrabold flex items-center gap-2">
-                    <Zap className="h-4 w-4" />
-                    Scientific Standards
-                  </h3>
-                  <p className="text-xs text-zinc-500 mt-1">Why my clients achieve reliable body conversions:</p>
-                </div>
-                <ul className="space-y-4">
-                  {ABOUT_COPY.credentialsList.map((cred, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <div className="p-1 bg-lime-950/40 border border-lime-800/40 rounded-lg shrink-0 mt-0.5">
-                        <Activity className="h-3.5 w-3.5 text-lime-400" />
-                      </div>
-                      <span className="text-xs text-zinc-300 leading-normal font-medium">{cred}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="bg-zinc-900/60 p-4 rounded-xl border border-zinc-800">
-                  <p className="text-xs font-mono font-bold text-white uppercase mb-1.5">Practice What I Preach</p>
-                  <p className="text-[11px] text-zinc-500 leading-normal">
-                    I've personally undergone multiple bulk and cut cycles down to single-digit body fat, giving me deep understanding of the physiological, neurological, and emotional barriers in your cycle.
-                  </p>
-                </div>
-              </div>
+                  Advanced Hypertrophy Specialist
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[#b8f600]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    check_circle
+                  </span>
+                  Evidence-Based Nutrition Programming
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-[#b8f600]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    check_circle
+                  </span>
+                  Biomechanical Movement Analysis
+                </li>
+              </ul>
+            </div>
+            <div className="h-full min-h-[400px] rounded-xl overflow-hidden relative border border-white/5">
+              <img
+                className="w-full h-full object-cover absolute inset-0"
+                alt="Ishan Portrait"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEINEtoZzLV9q0y2fBmKlLisO9F4xXcQDvDPMC14M1qbzZITsgPTzVpWrOSPN99Q8AdaFhnGzMRMT2Mn72-xOPbg-vflHfV6GX0yeQRDBL-2WillL0L8KRLwoIaCRbeOeE78FdK7FMY8i7pdmQo4vuC84RXPePnkvlami7YjAbPRPXCam_oJUvyKh--eJJj2s6MN7wAE4W91PuqzzBvxGYOuiUknqSnl1_vmJRGVhGi_G6Dl37Ykl8zYCJNRR_5c9m-uFoqKn43KI"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-transparent" />
             </div>
           </div>
         </section>
 
-        {/* ── 3.5. TESTIMONIALS ── */}
-        <section id="testimonials-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ── 3. CLIENT RESULTS / TESTIMONIALS SECTION ── */}
+        <section id="testimonials-section" className="px-margin-mobile md:px-margin-desktop py-12 max-w-container-max mx-auto">
           <TestimonialsSection />
         </section>
 
-        {/* ── 4. PROGRAMS ── */}
-        <section id="programs-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <ProgramsSection onSelectPackage={handleSelectPackage} />
+        {/* ── 4. BLUEPRINTS / PROGRAMS SECTION ── */}
+        <section className="px-margin-mobile md:px-margin-desktop py-24 bg-surface-container-low/30" id="blueprints">
+          <div className="max-w-container-max mx-auto">
+            <ProgramsSection onSelectPackage={handleSelectPackage} />
+          </div>
         </section>
 
-        {/* ── 4.5. PRICING ── */}
-        <section id="pricing-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ── 5. PRICING SECTION ── */}
+        <section id="pricing-section" className="px-margin-mobile md:px-margin-desktop py-24 max-w-container-max mx-auto">
           <PricingSection onApply={handleSelectPackage} />
         </section>
 
-        {/* ── 4. MACRO CALCULATOR ── */}
-        <section id="calculator-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ── 6. CALIBRATOR / MACRO CALCULATOR SECTION ── */}
+        <section className="px-margin-mobile md:px-margin-desktop py-24 max-w-container-max mx-auto border-t border-white/5" id="calibrator">
           <MacroCalculator onApplyMacros={handleApplyMacros} />
         </section>
 
-        {/* ── 5. INQUIRY FORM ── */}
-        <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ── 7. INQUIRY PORTAL ── */}
+        <section id="intake-portal" className="px-margin-mobile md:px-margin-desktop py-24 max-w-4xl mx-auto">
           <InquiryForm prefilledGoal={prefilledGoal} prefilledCalories={prefilledCalories} />
         </section>
 
-        {/* ── 6. FAQ ── */}
-        <section id="faq-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* ── 8. FAQS SECTION ── */}
+        <section id="faq-section" className="px-margin-mobile md:px-margin-desktop py-24 max-w-container-max mx-auto border-t border-white/5">
           <FAQSection />
         </section>
-
       </main>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t border-zinc-900 bg-zinc-950/80 py-12 px-4 sm:px-6 lg:px-8 mt-auto">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center">
-              <Dumbbell className="h-4 w-4 text-[#bfff00]" />
+      <footer className="bg-surface-dim border-t border-white/10 mt-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter px-margin-mobile md:px-margin-desktop py-12 max-w-container-max mx-auto text-left">
+          <div className="space-y-4">
+            <div className="font-headline-lg text-white font-black tracking-tighter text-3xl uppercase">
+              IB.COACH
             </div>
-            <span className="text-xs font-mono font-bold tracking-widest text-[#bfff00]">IB.COACH • BY ISHAN</span>
+            <p className="font-label-sm text-xs font-mono text-on-surface/50">
+              ELITE PHYSIQUE ENGINEERING
+            </p>
+            <p className="font-label-sm text-[10px] font-mono text-on-surface/40 leading-normal max-w-sm">
+              Disclaimer: Training systems and macro plans are structured based on established exercise biomechanics and nutritional sciences. Not a substitute for formal medical advice.
+            </p>
           </div>
-          <p className="text-[11px] text-zinc-500 max-w-md md:text-right leading-normal font-medium">
-            Disclaimer: The information on this website is based on personal transformation experience and peer-reviewed physical wellness literature. It is not formal medical advice.
-          </p>
-        </div>
-        <div className="text-center text-[10px] text-zinc-700 font-mono pt-6 border-t border-zinc-900 mt-6">
-          © 2026 Ishan Fitness Coaching. All Rights Reserved. Master Your Human Architecture.
+          <div className="flex flex-col md:items-end justify-between gap-6">
+            <div className="flex flex-wrap gap-6 font-mono text-xs text-on-surface/50">
+              {navLinks.map(link => (
+                <a key={link.href} href={link.href} className="hover:text-[#b8f600] transition-colors uppercase">
+                  {link.label}
+                </a>
+              ))}
+            </div>
+            <div className="flex items-center gap-4 text-xs font-mono">
+              <a
+                href="https://www.instagram.com/ishan_bajaj04/"
+                target="_blank"
+                rel="noreferrer"
+                className="text-on-surface/50 hover:text-[#b8f600] transition-colors uppercase"
+              >
+                Instagram
+              </a>
+              <a
+                href="https://wa.me/917297946193"
+                target="_blank"
+                rel="noreferrer"
+                className="text-on-surface/50 hover:text-[#b8f600] transition-colors uppercase"
+              >
+                WhatsApp
+              </a>
+            </div>
+            <p className="font-label-sm text-[10px] font-mono text-on-surface/40">
+              © 2026 IB.COACH. ALL RIGHTS RESERVED. MASTER YOUR ARCHITECTURE.
+            </p>
+          </div>
         </div>
       </footer>
 
-      {/* ── FLOATING BUTTONS ── */}
+      {/* ── FLOATING WIDGETS ── */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
-        {/* Instagram */}
-        <a
+        {/* Follow Instagram */}
+        <motion.a
           href="https://www.instagram.com/ishan_bajaj04/"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center justify-center gap-2.5 bg-gradient-to-tr from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888] hover:opacity-90 text-white font-bold text-xs px-4 py-3 rounded-2xl shadow-[0_0_20px_rgba(220,39,67,0.3)] transition-all hover:scale-105 active:scale-95"
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          className="flex items-center justify-center gap-2 text-white font-bold text-xs px-4 py-3 rounded-xl shadow-lg transition-all"
+          style={{
+            background: 'linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+            boxShadow: '0 0 20px rgba(220,39,67,0.35)'
+          }}
           aria-label="Follow on Instagram"
         >
           <Instagram className="h-4 w-4" />
-          <span className="hidden sm:inline">Follow on Instagram</span>
-        </a>
+          <span className="hidden sm:inline">Instagram</span>
+        </motion.a>
 
-        {/* WhatsApp */}
-        <a
+        {/* WhatsApp Float */}
+        <motion.a
           href="https://wa.me/917297946193?text=Hi%20Ishan%2C%20I%20saw%20your%20website%20and%20I'm%20interested%20in%20coaching."
           target="_blank"
           rel="noreferrer"
-          className="flex items-center justify-center gap-2.5 bg-green-500 hover:bg-green-400 text-white font-bold text-xs px-4 py-3 rounded-2xl shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all hover:scale-105 active:scale-95"
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          className="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(37,211,102,0.4)] transition-transform"
           aria-label="Chat on WhatsApp"
         >
-          <MessageCircle className="h-4 w-4 fill-white" />
-          <span className="hidden sm:inline">Chat on WhatsApp</span>
-        </a>
+          <MessageCircle className="h-7 w-7 text-white fill-white" />
+        </motion.a>
       </div>
     </div>
   );
