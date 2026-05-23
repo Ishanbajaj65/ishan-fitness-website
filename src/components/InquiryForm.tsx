@@ -10,6 +10,7 @@ interface InquiryFormProps {
 export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -18,13 +19,13 @@ export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormPro
     setIsSubmitting(true);
 
     try {
-      // Matches your exact 3 active columns in your Supabase table schema
       const { error } = await supabase
         .from('leads')
         .insert([
           {
             name: name,
             email: email,
+            whatsapp: whatsapp,
             selected_goal: initialGoal
           }
         ]);
@@ -34,6 +35,7 @@ export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormPro
       setIsSuccess(true);
       setName('');
       setEmail('');
+      setWhatsapp('');
     } catch (err) {
       console.error('Submission Error:', err);
       alert('Application failed to transmit. Please check your network connection and try again.');
@@ -50,7 +52,7 @@ export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormPro
         </div>
         <h3 className="text-xl font-extrabold text-white uppercase tracking-tight">Application Transmitted</h3>
         <p className="text-xs text-zinc-400 leading-relaxed">
-          Your blueprint parameters have been logged to the cloud. Ishan will review your physique requirements and reach out shortly.
+          Your blueprint parameters have been logged to the cloud. Ishan will review your physique requirements and reach out on WhatsApp shortly.
         </p>
         <button 
           onClick={() => setIsSuccess(false)}
@@ -93,6 +95,18 @@ export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormPro
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="johndoe@email.com"
+            className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-lime-400 font-medium transition-colors"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block font-bold">WhatsApp Number</label>
+          <input
+            type="tel"
+            required
+            value={whatsapp}
+            onChange={(e) => setWhatsapp(e.target.value)}
+            placeholder="+91 99999 99999"
             className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-lime-400 font-medium transition-colors"
           />
         </div>
