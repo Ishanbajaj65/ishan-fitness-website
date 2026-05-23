@@ -91,6 +91,8 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryForm
           goal: formData.goal,
           fitness_level: formData.fitnessLevel,
           target_calories: formData.targetCalories ? parseInt(formData.targetCalories) : null,
+          coaching_investment: investLabel,
+          injuries: injuryLabel,
           message: finalMessage || null,
         },
       ]);
@@ -118,7 +120,7 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryForm
                 Apply for Elite 1-on-1 Coaching
               </span>
               <h3 className="text-3xl font-extrabold text-white mt-3 font-sans tracking-tight">
-                LET'S BUILD YOUR BIOLOGY.
+                LET'S BUILD YOUR PHYSIQUE.
               </h3>
               <p className="text-zinc-400 text-sm mt-3">
                 I work with a small, dedicated roster of clients. Fill in your details and I'll reach out within 24 hours.
@@ -298,7 +300,7 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryForm
                 className="w-full cursor-pointer bg-[#bfff00] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 group mt-2 disabled:opacity-60"
               >
                 {submitting ? (
-                  <span>TRANSMITTING TO ISHAN'S CORPS...</span>
+                  <span>SUBMITTING APPLICATION...</span>
                 ) : (
                   <>
                     <span>SUBMIT APPLICATION</span>
@@ -323,7 +325,7 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryForm
               <CheckCircle className="h-12 w-12 text-[#bfff00]" />
             </div>
             <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold bg-[#bfff00]/10 px-3 py-1 rounded-full border border-[#bfff00]/25">
-              Application Transmitted
+              Application Submitted
             </span>
             <h3 className="text-3xl font-extrabold text-white mt-4 mb-3 tracking-tight">
               WE'VE GOT YOU, {formData.name.split(' ')[0].toUpperCase()}.

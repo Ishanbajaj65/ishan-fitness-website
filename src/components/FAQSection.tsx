@@ -41,13 +41,13 @@ export default function FAQSection() {
       <div className="text-center max-w-xl mx-auto space-y-4">
         <span className="section-badge">
           <HelpCircle className="h-3 w-3" />
-          Cognitive Interlock
+          FAQ
         </span>
         <h2 className="font-display text-4xl md:text-5xl font-black text-white tracking-[-0.03em] uppercase">
-          Questions & Intellect
+          Common Questions
         </h2>
         <p className="text-[#8d9479] text-sm leading-relaxed">
-          I believe that a great coaching relationship is built on extreme context and understanding. Raw answers guided by advanced training sciences.
+          I believe that a great coaching relationship is built on clear communication and understanding. Here are honest, simple answers to how my training programs work.
         </p>
       </div>
 
@@ -156,7 +156,7 @@ export default function FAQSection() {
 
           {filteredFAQ.length === 0 && (
             <div className="text-center py-14 glass-card rounded-2xl text-[#8d9479]">
-              No FAQs matching this biological category.
+              No FAQs matching this category.
             </div>
           )}
         </div>

@@ -31,17 +31,17 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
       let adv = '';
 
       if (bmiVal < 18.5) {
-        cat = 'Underweight (Tissue Deficit)';
-        adv = 'Lean contractility tissue deficit. Focus: Lean surplus calorie protocol (+300 to +500 kcal) combined with progressive overload hypertrophy programming to safely build functional contractile tissue.';
+        cat = 'Underweight (Build & Strengthen)';
+        adv = 'Your body is primed for healthy growth. Focus: A clean calorie surplus (+300 to +500 kcal) paired with structured strength training to safely build lean muscle and increase overall strength.';
       } else if (bmiVal < 25) {
-        cat = 'Normal (Optimal Baseline)';
-        adv = 'Ideal biological homeostasis. Focus: Clean recomposition strategy (slight surplus or deficit based on subjective body fat goals) paired with advanced biomechanical strength periodization.';
+        cat = 'Normal (Maintain & Recomp)';
+        adv = 'Excellent physical baseline. Focus: A body recomposition strategy (slight calorie surplus or deficit depending on your aesthetic goals) paired with consistent, progressive strength training to optimize body composition.';
       } else if (bmiVal < 30) {
-        cat = 'Overweight (Lipid Accumulation)';
-        adv = 'Adipose volume surplus. Focus: Meticulous caloric deficit (-400 to -600 kcal) guided by high-protein intake to preserve active contractile mass while burning fat tissue.';
+        cat = 'Overweight (Lean & Tone)';
+        adv = 'Ready to burn fat and reveal muscle. Focus: A structured calorie deficit (-400 to -600 kcal) combined with high-protein intake to fully protect your lean muscle while dropping body fat efficiently.';
       } else {
-        cat = 'Obese (Systemic Load)';
-        adv = 'Elevated cardiovascular and metabolic strain. Focus: Structured fat loss protocol, low-impact strength conditioning, and evidence-based deficit nutrition to secure fat loss safely.';
+        cat = 'Obese (Health & Transformation)';
+        adv = 'Focused path to metabolic health and energy. Focus: A controlled calorie deficit, joint-friendly strength training, and structured nutrition to achieve sustainable fat loss safely.';
       }
 
       setResult({
