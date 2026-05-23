@@ -1,1444 +1,1291 @@
-<!doctype html>
-<html lang="en" class="scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ishan • Elite Personal Fitness Coaching Portal</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+import React, { useState, useEffect } from 'react';
+import { 
+  Dumbbell, 
+  Apple, 
+  Zap, 
+  Flame, 
+  Check, 
+  ArrowRight, 
+  Calculator, 
+  ChevronRight, 
+  ChevronDown, 
+  Activity, 
+  ShieldCheck, 
+  Send, 
+  CheckCircle, 
+  Coffee, 
+  Award, 
+  TrendingUp,
+  X,
+  Sparkles
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+// Define structures
+interface FAQItem {
+  question: string;
+  answer: string;
+  category: 'nutrition' | 'training' | 'coaching';
+}
+
+interface StrategyInfo {
+  title: string;
+  badge: string;
+  cues: string[];
+}
+
+const FAQ_ITEMS: FAQItem[] = [
+  {
+    question: "How do you calculate my macros, and will I need to restrict entire food groups?",
+    answer: "Absolutely not. Restricting entire food groups is the quickest shortcut to psychological burnout. We establish your specific Total Daily Energy Expenditure (TDEE) and Lean Body Mass (LBM) through comprehensive client parsing. I will teach you a flexible dieting strategy (balancing macros and micros) that enables you to stay social, enjoy life, and hit your goals without food-guilt.",
+    category: "nutrition"
+  },
+  {
+    question: "I've been lifting for years but have hit a stubborn plateau. How will your training system help?",
+    answer: "Plateaus are usually a sign of unmanaged fatigue, insufficient mechanical tension, or a lack of progressive overload structure. We will audit your current training logs, analyze video footage of your lift execution, and adjust your set volumes and proximity to failure (RPE/RIR). We use undulating progression variables to break adaptational resistance and spark fresh muscle hypertrophy.",
+    category: "training"
+  },
+  {
+    question: "Is single-digit body fat sustainable, and is it what I should strive for?",
+    answer: "Getting to single-digit body fat is a rigorous, elite endeavor suited for physical milestones, photoshoots, or events. While spectacular, it requires extreme compliance. For long-term year-round comfort, energy, focus, and healthy hormone balances, most men thrive between 10-14% body fat. We will customize your level of leanness to support both your aesthetic aspirations and daily work-life vitality.",
+    category: "coaching"
+  },
+  {
+    question: "How is Ishan's coaching different from a generic PDF training guide?",
+    answer: "A generic PDF is a dead document. It cannot review your lifting form, adjust variables when you get sick, or explain the physiological reasons behind a macro shift. My coaching is an active, collaborative partnership. You get dynamic weekly program adjustments, video biomechanical feedback, stress/sleep tracking audits, and direct support to teach you the 'why' behind the results.",
+    category: "coaching"
+  }
+];
+
+const STRATEGY_MAP: Record<string, StrategyInfo> = {
+  'fat-loss': {
+    title: "Single-Digit Fat Shred Protocol Blueprint Selected",
+    badge: "High Thermic Efficiency & Recomp",
+    cues: [
+      "Targeting lipid reduction while guarding myofibrillar tissue via structural mechanical tension.",
+      "Cyclical refeeds planned at maintenance level to support circulating thyroid and leptin hormones.",
+      "Step count parameters programmed to safely increase NEAT without raising cortisol."
+    ]
+  },
+  'muscle': {
+    title: "Hypertrophy Matrix Blueprint Selected",
+    badge: "Hypertrophy & Progressive Volume",
+    cues: [
+      "Surplus margins planned specifically to maximize amino oxidation without packing visceral adipose tissue.",
+      "Training structures designed strictly in the 1-2 Reps-in-Reserve (RIR) relative intensity range.",
+      "Targeting exact glycogen-loading windows inside your systemic recovery boundaries."
+    ]
+  },
+  'recomp': {
+    title: "Body Recomposition Phase Blueprint Selected",
+    badge: "CYCLICAL MACRONUTRIENT PARTITION",
+    cues: [
+      "Simultaneous lipolysis and muscle synthesis using localized macro-timing overrides.",
+      "Focusing heavily on multi-joint compounds with progressive biomechanical tension variables.",
+      "Energy margins adjusted on heavy vs light training days."
+    ]
+  },
+  'meal-plan': {
+    title: "Metabolic Fuel Blueprint Selected",
+    badge: "MACRONUTRIENT ALLOCATION ONLY",
+    cues: [
+      "Bespoke macro partitioning targets structured completely around your food digestion patterns.",
+      "Strategic sodium, potassium, and hydration guidance preventing intra-cellular water holding.",
+      "Flexible combinations matching work stress parameters and eating schedules."
+    ]
+  }
+};
+
+export default function App() {
+  // Calibrator States
+  const [systemUnit, setSystemUnit] = useState<'metric' | 'imperial'>('metric');
+  const [selectedGender, setSelectedGender] = useState<'male' | 'female'>('male');
+  const [weight, setWeight] = useState<number>(80);
+  const [height, setHeight] = useState<number>(180);
+  const [age, setAge] = useState<number>(26);
+  const [activity, setActivity] = useState<string>('1.55');
+  const [trackingGoal, setTrackingGoal] = useState<'cut' | 'recomp' | 'bulk'>('cut');
+
+  // Outputs state
+  const [calculatedTargetCal, setCalculatedTargetCal] = useState<number | null>(null);
+  const [calculatedTdee, setCalculatedTdee] = useState<number | null>(null);
+  const [macros, setMacros] = useState<{
+    protein: number;
+    carb: number;
+    fat: number;
+    proteinCals: number;
+    carbCals: number;
+    fatCals: number;
+  } | null>(null);
+  const [isCalibrating, setIsCalibrating] = useState<boolean>(false);
+
+  // Inquiry Form States
+  const [formName, setFormName] = useState<string>('');
+  const [formEmail, setFormEmail] = useState<string>('');
+  const [formGoal, setFormGoal] = useState<string>('fat-loss');
+  const [formExp, setFormExp] = useState<string>('intermediate');
+  const [formMsg, setFormMsg] = useState<string>('');
+  const [preloadedCalories, setPreloadedCalories] = useState<number | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // FAQ States
+  const [faqCategory, setFaqCategory] = useState<'all' | 'nutrition' | 'training' | 'coaching'>('all');
+  const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(0);
+
+  // Handle system change effects on placeholder metric weight/height values
+  const handleSystemChange = (unit: 'metric' | 'imperial') => {
+    setSystemUnit(unit);
+    if (unit === 'metric') {
+      setWeight(80);
+      setHeight(180);
+    } else {
+      setWeight(175);
+      setHeight(70);
+    }
+    // reset outputs to clean state
+    setCalculatedTargetCal(null);
+    setCalculatedTdee(null);
+    setMacros(null);
+  };
+
+  // Perform Caloric Calculations
+  const calculateBlueprint = () => {
+    setIsCalibrating(true);
+    setTimeout(() => {
+      let weightKg = weight;
+      let heightCm = height;
+
+      if (systemUnit === 'imperial') {
+        weightKg = weight * 0.45359237;
+        heightCm = height * 2.54;
+      }
+
+      // Mifflin-St Jeor formula
+      let bmr = 10 * weightKg + 6.25 * heightCm - 5 * age;
+      if (selectedGender === 'male') {
+        bmr += 5;
+      } else {
+        bmr -= 161;
+      }
+
+      // Total Daily Energy Expenditure (TDEE)
+      const activityMult = parseFloat(activity);
+      const tdeeVal = Math.round(bmr * activityMult);
+      let targetCalories = tdeeVal;
+
+      if (trackingGoal === 'cut') {
+        targetCalories = tdeeVal - 500;
+      } else if (trackingGoal === 'bulk') {
+        targetCalories = tdeeVal + 350;
+      } else {
+        targetCalories = tdeeVal - 100; // recommposition slight deficit
+      }
+
+      // Protein target: high standard demand (2.2g per kg of bodyweight)
+      const proteinGrams = Math.round(weightKg * 2.2);
+      const proteinCals = proteinGrams * 4;
+
+      // 22% of target calories from fat
+      const fatCals = targetCalories * 0.22;
+      const fatGrams = Math.round(fatCals / 9);
+
+      // Remaining calories from carbohydrates
+      const remainingCals = targetCalories - (proteinCals + fatCals);
+      const carbGrams = Math.max(Math.round(remainingCals / 4), 0);
+
+      setCalculatedTdee(tdeeVal);
+      setCalculatedTargetCal(targetCalories);
+      setMacros({
+        protein: proteinGrams,
+        carb: carbGrams,
+        fat: fatGrams,
+        proteinCals: proteinCals,
+        carbCals: Math.max(remainingCals, 0),
+        fatCals: fatCals
+      });
+      setIsCalibrating(false);
+    }, 500);
+  };
+
+  // Autofill data from calculator to form
+  const handleAutofill = () => {
+    if (calculatedTargetCal === null) return;
     
-    <!-- Tailwind CSS Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Outfit', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
-            },
-            colors: {
-              brand: '#bfff00', // Volt / Neon Lime
-              zinc: {
-                850: '#1f1f23',
-                925: '#101014',
-                950: '#030303',
-              }
-            }
-          }
-        }
-      }
-    </script>
+    // update matching dropdown parameter
+    if (trackingGoal === 'bulk') {
+      setFormGoal('muscle');
+    } else if (trackingGoal === 'cut') {
+      setFormGoal('fat-loss');
+    } else {
+      setFormGoal('recomp');
+    }
 
-    <!-- Custom CSS styles -->
-    <style type="text/css">
-      body {
-        background-color: #030303;
-        color: #f4f4f5;
-        overflow-x: hidden;
+    setPreloadedCalories(calculatedTargetCal);
+    
+    // Smooth scroll to formulation
+    const element = document.getElementById('inquiry-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Select particular program directly
+  const handleSelectProgram = (goalValue: string) => {
+    setFormGoal(goalValue);
+    const element = document.getElementById('inquiry-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  // Submit coaching inquiry
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+      // scroll back up inside the card smoothly to notice submission status
+      const element = document.getElementById('inquiry-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
       }
-      /* Custom scrollbar for premium dark aesthetic */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #09090b;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #27272a;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #3f3f46;
-      }
+    }, 800);
+  };
+
+  const handleResetForm = () => {
+    setFormName('');
+    setFormEmail('');
+    setFormGoal('fat-loss');
+    setFormExp('intermediate');
+    setFormMsg('');
+    setPreloadedCalories(null);
+    setIsSubmitted(false);
+  };
+
+  const currentStrategy = STRATEGY_MAP[formGoal] || STRATEGY_MAP['fat-loss'];
+
+  // Total macro percents for dynamic progress widths
+  const proteinPercent = macros ? Math.round((macros.proteinCals / calculatedTargetCal!) * 100) : 33;
+  const carbPercent = macros ? Math.round((macros.carbCals / calculatedTargetCal!) * 100) : 45;
+  const fatPercent = macros ? Math.round((macros.fatCals / calculatedTargetCal!) * 100) : 22;
+
+  return (
+    <div className="font-sans min-h-screen bg-[#030303] text-zinc-100 flex flex-col antialiased">
       
-      /* Subtle transitions for tab filters and active highlights */
-      .fade-enter {
-        opacity: 0;
-        transform: translateY(8px);
-        transition: opacity 0.3s ease, transform 0.3s ease;
-      }
-      .fade-enter-active {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    </style>
-  </head>
-  <body class="font-sans">
-
-    <!-- FLOATING COPYWRITER PORTAL TRIGGER -->
-    <div onclick="openCopyHub()" class="fixed bottom-6 left-6 z-40 hidden sm:flex items-center gap-2.5 bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800 text-xs px-4 py-3 rounded-full text-zinc-300 font-medium cursor-pointer shadow-2xl transition-all hover:scale-105">
-      <span class="h-2 w-2 rounded-full bg-[#bfff00] animate-pulse"></span>
-      <span class="font-mono text-zinc-400">Copywriter Hub ready</span>
-      <i data-lucide="chevron-right" class="h-4 w-4 text-zinc-500"></i>
-    </div>
-
-    <!-- MAIN HEADER -->
-    <header class="sticky top-0 z-30 bg-[#030303]/80 backdrop-blur-md border-b border-zinc-900">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <!-- Logo / Brand -->
-        <div class="flex items-center gap-2">
-          <div class="h-10 w-10 bg-[#bfff00] rounded-xl flex items-center justify-center border border-[#bfff00]/20 shadow-[0_0_15px_rgba(191,255,0,0.15)]">
-            <i data-lucide="dumbbell" class="h-5 w-5 text-black stroke-[2.5]"></i>
-          </div>
-          <div>
-            <span class="text-md font-extrabold text-white tracking-widest font-mono">IB.COACH</span>
-            <p class="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">PHYSIQUE STRATEGIST</p>
-          </div>
-        </div>
-
-        <!-- Navigation Anchors -->
-        <nav class="hidden md:flex items-center gap-8 text-xs font-mono tracking-widest uppercase">
-          <a href="#about-me-section" class="text-zinc-400 hover:text-white transition-colors">Philosophy</a>
-          <a href="#packages-section" class="text-zinc-400 hover:text-white transition-colors">Blueprints</a>
-          <a href="#calibrator-section" class="text-zinc-400 hover:text-white transition-colors">Calibrator</a>
-          <a href="#faq-section" class="text-zinc-400 hover:text-white transition-colors">Questions</a>
-        </nav>
-
-        <!-- CTA & Copy drawer triggers -->
-        <div class="flex items-center gap-3">
-          <button onclick="openCopyHub()" class="bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 rounded-xl px-4 py-2.5 text-xs font-mono uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-all active:scale-95">
-            <i data-lucide="file-text" class="h-4 w-4 text-lime-400"></i>
-            <span>Copywriter Copy Hub</span>
-          </button>
-          <a href="#inquiry-section" class="bg-[#bfff00] hover:bg-white text-black font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(191,255,0,0.15)] hidden sm:inline-block">
-            APPLY NOW
-          </a>
-        </div>
-      </div>
-    </header>
-
-    <!-- MAIN GRID CONTAINER -->
-    <main class="flex-1 space-y-24 md:space-y-36 pb-24 pt-10">
-
-      <!-- 1. HERO SECTION -->
-      <section id="hero" class="relative px-4 sm:px-6 lg:px-8">
-        <!-- Radial Glowing Orb -->
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#bfff00]/5 rounded-full blur-[120px] pointer-events-none"></div>
-
-        <div class="max-w-7xl mx-auto">
-          <div class="text-center space-y-6 max-w-4xl mx-auto">
-            
-            <!-- Pitch Accent Badge -->
-            <div class="inline-flex items-center gap-2 px-3 py-1 bg-zinc-950 border border-zinc-850 rounded-full bg-zinc-925">
-              <span class="h-2 w-2 rounded-full bg-[#bfff00] animate-pulse"></span>
-              <span class="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-zinc-300">
-                8 Years in the Trenches • Science-Backed Results
-              </span>
-              <button onclick="copyPlainBlock('hero')" class="p-1 hover:text-white text-zinc-500 transition-colors" title="Copy Hero Copy">
-                <i data-lucide="copy" class="h-3 w-3"></i>
-              </button>
-            </div>
-
-            <!-- Headline -->
-            <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-[0.9] uppercase">
-              YOUR PHYSIQUE <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-400 to-lime-400">IS A SCIENCE.</span> <br />
-              <span class="text-[#bfff00]">STOP GUESSING.</span>
-            </h1>
-
-            <!-- Subheadline -->
-            <p id="hero-subheadline" class="text-zinc-405 text-sm sm:text-md md:text-lg max-w-2xl mx-auto leading-relaxed text-zinc-400">
-              Bulked. Shredded. Proven. I've spent 8 years mastering the training and nutrition methodologies that take human bodies to single-digit body fat. Now, I'm handing you the keys to your ultimate form.
-            </p>
-
-            <!-- CTA Buttons -->
-            <div class="flex flex-col sm:flex-row justify-center gap-4 pt-4 max-w-md mx-auto">
-              <a href="#inquiry-section" class="flex-1 bg-[#bfff00] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 group">
-                <span>Claim Your Blueprint</span>
-                <i data-lucide="chevron-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
-              </a>
-              <a href="#packages-section" class="flex-1 bg-zinc-90 w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm py-4 rounded-xl border border-zinc-800 transition-all uppercase tracking-wider flex items-center justify-center">
-                Explore Programs
-              </a>
-            </div>
-          </div>
-
-          <!-- Proof Authority Grid -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto mt-16 md:mt-24 border-t border-b border-zinc-900 py-8 md:py-12 bg-zinc-950/20 backdrop-blur-sm rounded-3xl px-6">
-            <div class="text-center space-y-1">
-              <span class="text-3xl md:text-4xl font-extrabold font-mono text-white block tracking-tighter">08+</span>
-              <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Years Experience</span>
-            </div>
-            <div class="text-center space-y-1">
-              <span class="text-3xl md:text-4xl font-extrabold font-mono text-white block tracking-tighter">100%</span>
-              <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Practice what I preach</span>
-            </div>
-            <div class="text-center space-y-1">
-              <span class="text-3xl md:text-4xl font-extrabold font-mono text-white block tracking-tighter">&lt;09%</span>
-              <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Single-Digit Body Fat</span>
-            </div>
-            <div class="text-center space-y-1">
-              <span class="text-3xl md:text-4xl font-extrabold font-mono text-white block tracking-tighter">1-on-1</span>
-              <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">No Generic templates</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 2. "ABOUT ME" STORY SECTION -->
-      <section id="about-me-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-zinc-925 border border-zinc-900 rounded-3xl p-6 md:p-12 relative overflow-hidden">
-          <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#bfff00]/5 rounded-full blur-[100px] pointer-events-none"></div>
+      {/* HEADER */}
+      <header className="sticky top-0 z-30 bg-[#030303]/80 backdrop-blur-md border-b border-zinc-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 items-start">
+          {/* Logo */}
+          <div className="flex items-center gap-2">
+            <div className="h-10 w-10 bg-[#bfff00] rounded-xl flex items-center justify-center border border-[#bfff00]/20 shadow-[0_0_15px_rgba(191,255,0,0.15)]">
+              <Dumbbell className="h-5 w-5 text-black stroke-[2.5]" />
+            </div>
+            <div>
+              <span className="text-md font-extrabold text-white tracking-widest font-mono">IB.COACH</span>
+              <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">PHYSIQUE STRATEGIST</p>
+            </div>
+          </div>
+
+          {/* Navigation Anchors */}
+          <nav className="hidden md:flex items-center gap-8 text-xs font-mono tracking-widest uppercase">
+            <a href="#about-me-section" className="text-zinc-400 hover:text-white transition-colors duration-200">Philosophy</a>
+            <a href="#packages-section" className="text-zinc-400 hover:text-white transition-colors duration-200">Blueprints</a>
+            <a href="#calibrator-section" className="text-zinc-400 hover:text-white transition-colors duration-200">Calibrator</a>
+            <a href="#faq-section" className="text-zinc-400 hover:text-white transition-colors duration-200">Questions</a>
+          </nav>
+
+          {/* CTA Trigger */}
+          <div className="flex items-center gap-3">
+            <a 
+              href="#inquiry-section" 
+              className="bg-[#bfff00] hover:bg-white text-black font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all duration-300 shadow-[0_0_15px_rgba(191,255,0,0.15)]"
+            >
+              APPLY NOW
+            </a>
+          </div>
+        </div>
+      </header>
+
+      {/* MAIN CONTENT PORTAL */}
+      <main className="flex-1 space-y-24 md:space-y-36 pb-24 pt-10">
+
+        {/* 1. HERO SECTION */}
+        <section id="hero" className="relative px-4 sm:px-6 lg:px-8 overflow-hidden">
+          {/* Radial Glowing Orb for Premium Vibe */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#bfff00]/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center space-y-6 max-w-4xl mx-auto">
+              
+              {/* Pitch Accent Badge */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-950 border border-zinc-850 rounded-full">
+                <span className="h-2 w-2 rounded-full bg-[#bfff00] animate-pulse"></span>
+                <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-zinc-300">
+                  8 Years in the Trenches • Science-Backed Results
+                </span>
+              </div>
+
+              {/* Headline */}
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white tracking-tighter leading-[0.9] uppercase">
+                YOUR PHYSIQUE <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-400 to-lime-400">IS A SCIENCE.</span> <br />
+                <span className="text-[#bfff00]">STOP GUESSING.</span>
+              </h1>
+
+              {/* Subheadline */}
+              <p className="text-zinc-400 text-sm sm:text-md md:text-lg max-w-2xl mx-auto leading-relaxed">
+                Bulked. Shredded. Proven. I've spent 8 years mastering the training and nutrition methodologies that take human bodies to single-digit body fat. Now, I'm handing you the keys to your ultimate form.
+              </p>
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4 max-w-md mx-auto">
+                <a 
+                  href="#inquiry-section" 
+                  className="flex-1 bg-[#bfff00] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 group duration-300"
+                >
+                  <span>Claim Your Blueprint</span>
+                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </a>
+                <a 
+                  href="#packages-section" 
+                  className="flex-1 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm py-4 rounded-xl border border-zinc-800 transition-all uppercase tracking-wider flex items-center justify-center duration-300"
+                >
+                  Explore Programs
+                </a>
+              </div>
+            </div>
+
+            {/* Proof Authority Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto mt-16 md:mt-24 border-t border-b border-zinc-900 py-8 md:py-12 bg-zinc-950/20 backdrop-blur-sm rounded-3xl px-6">
+              <div className="text-center space-y-1">
+                <span className="text-3xl md:text-4xl font-extrabold font-mono text-white block tracking-tighter">08+</span>
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Years Experience</span>
+              </div>
+              <div className="text-center space-y-1">
+                <span className="text-3xl md:text-4xl font-extrabold font-mono text-white block tracking-tighter">100%</span>
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Practice what I preach</span>
+              </div>
+              <div className="text-center space-y-1">
+                <span className="text-3xl md:text-4xl font-extrabold font-mono text-white block tracking-tighter">&lt;09%</span>
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">Single-Digit Body Fat</span>
+              </div>
+              <div className="text-center space-y-1">
+                <span className="text-3xl md:text-4xl font-extrabold font-mono text-white block tracking-tighter">1-on-1</span>
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest block">No Generic templates</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 2. "ABOUT ME" STORY SECTION */}
+        <section id="about-me-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-zinc-950/40 border border-zinc-900 rounded-3xl p-6 md:p-12 relative overflow-hidden">
+            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#bfff00]/5 rounded-full blur-[100px] pointer-events-none"></div>
             
-            <!-- Biography -->
-            <div class="lg:col-span-7 space-y-6">
-              <div class="space-y-2">
-                <div class="flex items-center gap-3">
-                  <span class="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold px-2 py-0.5 bg-lime-950/30 border border-lime-800/30 rounded">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 items-start">
+              
+              {/* Biography narrative */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold px-2.5 py-1 bg-lime-950/30 border border-lime-800/30 rounded inline-block">
                     Proven in the Iron Trenches
                   </span>
-                  <button onclick="copyPlainBlock('about')" class="text-zinc-500 hover:text-white transition-colors" title="Copy About Copy">
-                    <i data-lucide="copy" class="h-3.5 w-3.5"></i>
-                  </button>
+                  <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight">MEET ISHAN</h2>
+                  <p className="text-xs md:text-sm font-mono text-zinc-450 tracking-wider font-semibold uppercase text-zinc-400">Founder, Head Coach & Strength Strategist</p>
                 </div>
-                <h2 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight">MEET ISHAN</h2>
-                <p class="text-xs md:text-sm font-mono text-zinc-400 tracking-wider font-semibold">Founder, Head Coach & Strength Strategist</p>
-              </div>
 
-              <p class="text-sm md:text-md text-[#bfff00] font-semibold leading-relaxed border-l-2 border-[#bfff00] pl-4">
-                I don't sell 'miracle' powders, 30-day quick fixes, or generic influencer workouts. I build elite physiques using ironclad exercise mechanics and cutting-edge metabolic science.
-              </p>
-
-              <div class="space-y-4 text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                <p>
-                  My journey started over eight years ago. Just like many of you, I spent my early years in the gym overwhelmed by contrasting advice, fake natural claims, and confusing research. I made every mistake in the book—from dangerous overtraining to standard nutritional starvations that wiped out my energy and muscle.
+                <p className="text-sm md:text-md text-[#bfff00] font-semibold leading-relaxed border-l-2 border-[#bfff00] pl-4">
+                  I don't sell 'miracle' powders, 30-day quick fixes, or generic influencer workouts. I build elite physiques using ironclad exercise mechanics and cutting-edge metabolic science.
                 </p>
-                <p>
-                  So, I threw out the bodybuilding forum hype and dug into the clinical literature. I applied nutrition kinetics, biomechanics, and human physiology to my own body. I bulked up productively, packed on dense, functional muscle, and systematically cut down to single-digit body fat percentages strictly using science-guided training and flexible dieting.
-                </p>
-                <p>
-                  I believe in radical transparency: your coach must practice what they preach. I have personally bulked, maintained, and shredded, meaning I understand the psychological and physical hurdles of every single phase. I'm here to bypass the standard gym confusion and fast-track you straight to results.
-                </p>
-              </div>
-            </div>
 
-            <!-- Guidelines / Scientific Standards Card -->
-            <div class="lg:col-span-5 bg-zinc-950 border border-zinc-850 p-6 md:p-8 rounded-2xl space-y-6">
-              <div>
-                <h3 class="text-sm font-mono text-[#bfff00] uppercase tracking-widest font-extrabold flex items-center gap-2">
-                  <i data-lucide="award" class="h-4.5 w-4.5"></i>
-                  <span>Scientific Standards</span>
-                </h3>
-                <p class="text-xs text-zinc-500 mt-1">Why my clients achieve reliable body conversions:</p>
-              </div>
-
-              <ul class="space-y-4">
-                <li class="flex items-start gap-3">
-                  <div class="p-1 bg-lime-950/40 border border-lime-800/40 rounded-lg shrink-0 mt-0.5">
-                    <i data-lucide="check-circle" class="h-3.5 w-3.5 text-lime-400"></i>
-                  </div>
-                  <span class="text-xs text-zinc-300 leading-normal font-medium">8+ Years of Elite Gym & Biomechanical Training Experience</span>
-                </li>
-                <li class="flex items-start gap-3">
-                  <div class="p-1 bg-lime-950/40 border border-lime-800/40 rounded-lg shrink-0 mt-0.5">
-                    <i data-lucide="check-circle" class="h-3.5 w-3.5 text-lime-400"></i>
-                  </div>
-                  <span class="text-xs text-zinc-300 leading-normal font-medium">Comprehensive mastery of advanced Macronutrient Partitioning & TDEE manipulation</span>
-                </li>
-                <li class="flex items-start gap-3">
-                  <div class="p-1 bg-lime-950/40 border border-lime-800/40 rounded-lg shrink-0 mt-0.5">
-                    <i data-lucide="check-circle" class="h-3.5 w-3.5 text-lime-400"></i>
-                  </div>
-                  <span class="text-xs text-zinc-300 leading-normal font-medium">Expertise in Progressive Overload Periodization & Fatigue/Recovery management</span>
-                </li>
-                <li class="flex items-start gap-3">
-                  <div class="p-1 bg-lime-950/40 border border-lime-800/40 rounded-lg shrink-0 mt-0.5">
-                    <i data-lucide="check-circle" class="h-3.5 w-3.5 text-lime-400"></i>
-                  </div>
-                  <span class="text-xs text-zinc-300 leading-normal font-medium">100% bespoke protocol designs adjusted weekly based on your live biofeedback</span>
-                </li>
-              </ul>
-
-              <div class="bg-zinc-900/60 p-4 rounded-xl border border-zinc-850">
-                <div class="flex items-center gap-3">
-                  <i data-lucide="trending-up" class="h-4 w-4 text-lime-400"></i>
-                  <span class="text-xs font-mono font-bold text-white uppercase">Practice What I Preach</span>
+                <div className="space-y-4 text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                  <p>
+                    My journey started over eight years ago. Just like many of you, I spent my early years in the gym overwhelmed by contrasting advice, fake natural claims, and confusing research. I made every mistake in the book—from dangerous overtraining to standard nutritional starvations that wiped out my energy and muscle.
+                  </p>
+                  <p>
+                    So, I threw out the bodybuilding forum hype and dug into the clinical literature. I applied nutrition kinetics, biomechanics, and human physiology to my own body. I bulked up productively, packed on dense, functional muscle, and systematically cut down to single-digit body fat percentages strictly using science-guided training and flexible dieting.
+                  </p>
+                  <p>
+                    I believe in radical transparency: your coach must practice what they preach. I have personally bulked, maintained, and shredded, meaning I understand the psychological and physical hurdles of every single phase. I'm here to bypass the standard gym confusion and fast-track you straight to results.
+                  </p>
                 </div>
-                <p class="text-[11px] text-zinc-500 mt-1.5 leading-normal">
-                  I've personally undergone multiple bulk and cut cycles down to single-digit body fat, allowing me to fully grasp the physiological, neurological, and emotional barriers of your specific cycle.
-                </p>
               </div>
-            </div>
 
-          </div>
-        </div>
-      </section>
-
-      <!-- 3. SERVICES/OFFERINGS PACKAGE SECTION -->
-      <section id="packages-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        <div class="text-center max-w-xl mx-auto space-y-3">
-          <span class="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">
-            High-Science Blueprints
-          </span>
-          <h2 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">CORE PROTOCOLS & PACKAGES</h2>
-          <p class="text-zinc-400 text-sm">
-            No generic advice. Every single protocol below is customized specifically for your physical body, metabolic trends, biofeedback tracking, and lifestyle constraints.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          <!-- Package 1 -->
-          <div class="relative bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:border-zinc-700 shadow-lg transition-all duration-300">
-            <div class="space-y-5">
-              <div class="flex justify-between items-start">
-                <div class="p-3 rounded-xl border bg-zinc-900 border-zinc-850 text-zinc-300">
-                  <i data-lucide="apple" class="h-6 w-6"></i>
+              {/* Guidelines / Scientific Standards Card */}
+              <div className="lg:col-span-5 bg-zinc-950 border border-zinc-850 p-6 md:p-8 rounded-2xl space-y-6">
+                <div>
+                  <h3 className="text-sm font-mono text-[#bfff00] uppercase tracking-widest font-extrabold flex items-center gap-2">
+                    <Award className="h-4.5 w-4.5" />
+                    <span>Scientific Standards</span>
+                  </h3>
+                  <p className="text-xs text-zinc-500 mt-1">Why my clients achieve reliable body conversions:</p>
                 </div>
-                <span class="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded border text-green-400 bg-green-950/30 border-green-905/40">
-                  Medium Load
-                </span>
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-white tracking-tight">The Metabolic Fuel Blueprint</h3>
-                <p class="text-xs font-medium font-sans mt-1 text-zinc-500">Unshackle your diet. Fuel your aesthetic dominance.</p>
-              </div>
-              <p class="text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                A tailored nutrition architecture calculated using your precise lean body mass (LBM) and daily energy outputs. No miserable food restrictions—just real, science-driven fuel parameters.
-              </p>
-              <hr class="border-zinc-900" />
-              <div class="space-y-3">
-                <p class="text-[10px] font-semibold text-zinc-500 font-mono uppercase tracking-wider">Features Included:</p>
-                <ul class="space-y-2.5 text-xs text-zinc-300">
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Custom Macro & Calorie Targets adjusted dynamically</span>
+
+                <ul class="space-y-4">
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 bg-lime-950/40 border border-lime-800/40 rounded-lg shrink-0 mt-0.5">
+                      <CheckCircle className="h-3.5 w-3.5 text-lime-400" />
+                    </div>
+                    <span className="text-xs text-zinc-300 leading-normal font-medium">8+ Years of Elite Gym & Biomechanical Training Experience</span>
                   </li>
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Flexible Dieting Guide (IIFYM) with sample meals</span>
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 bg-lime-950/40 border border-lime-800/40 rounded-lg shrink-0 mt-0.5">
+                      <CheckCircle className="h-3.5 w-3.5 text-lime-400" />
+                    </div>
+                    <span className="text-xs text-zinc-300 leading-normal font-medium">Comprehensive mastery of advanced Macronutrient Partitioning & TDEE manipulation</span>
                   </li>
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Digestive Health & Micronutrient optimization list</span>
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 bg-lime-950/40 border border-lime-800/40 rounded-lg shrink-0 mt-0.5">
+                      <CheckCircle className="h-3.5 w-3.5 text-lime-400" />
+                    </div>
+                    <span className="text-xs text-zinc-300 leading-normal font-medium">Expertise in Progressive Overload Periodization & Fatigue/Recovery management</span>
                   </li>
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Hydration, Sodium & Workout-nutrition protocols</span>
+                  <li className="flex items-start gap-3">
+                    <div className="p-1 bg-lime-950/40 border border-lime-800/40 rounded-lg shrink-0 mt-0.5">
+                      <CheckCircle className="h-3.5 w-3.5 text-lime-400" />
+                    </div>
+                    <span className="text-xs text-zinc-300 leading-normal font-medium">100% bespoke protocol designs adjusted weekly based on your live biofeedback</span>
                   </li>
                 </ul>
-              </div>
-            </div>
 
-            <div class="mt-8 pt-6 border-t border-zinc-900 space-y-4">
-              <div class="grid grid-cols-2 gap-2 text-left">
-                <div>
-                  <span class="text-[9px] font-mono text-zinc-650 uppercase block mb-0.5 text-zinc-500">Timeline:</span>
-                  <span class="text-xs text-zinc-300 font-bold">Monthly / Recurring</span>
-                </div>
-                <div>
-                  <span class="text-[9px] font-mono text-zinc-650 uppercase block mb-0.5 text-zinc-500">Focus Group:</span>
-                  <span class="text-xs text-zinc-300 font-bold leading-tight">Nutrition Only</span>
+                <div className="bg-zinc-900/60 p-4 rounded-xl border border-zinc-850">
+                  <div className="flex items-center gap-3">
+                    <TrendingUp className="h-4 w-4 text-lime-400" />
+                    <span className="text-xs font-mono font-bold text-white uppercase">Practice What I Preach</span>
+                  </div>
+                  <p class="text-[11px] text-zinc-500 mt-1.5 leading-normal">
+                    I've personally undergone multiple bulk and cut cycles down to single-digit body fat, allowing me to fully grasp the physiological, neurological, and emotional barriers of your specific cycle.
+                  </p>
                 </div>
               </div>
-              <p class="text-[11px] text-zinc-500 leading-normal italic">
-                <strong>Best for:</strong> Busy professionals, plateaued lifters, and flexible eating enthusiasts.
-              </p>
-              <button onclick="selectGoal('meal-plan')" class="w-full font-bold text-xs py-3.5 rounded-xl transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5 border bg-zinc-900 hover:bg-zinc-800 text-white border-zinc-805 group">
-                <span>Select & Tailor</span>
-                <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
-              </button>
+
             </div>
           </div>
+        </section>
 
-          <!-- Package 2 -->
-          <div class="relative bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:border-zinc-700 shadow-lg transition-all duration-300">
-            <div class="space-y-5">
-              <div class="flex justify-between items-start">
-                <div class="p-3 rounded-xl border bg-zinc-900 border-zinc-850 text-zinc-300">
-                  <i data-lucide="dumbbell" class="h-6 w-6"></i>
-                </div>
-                <span class="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded border text-amber-400 bg-amber-950/30 border-amber-900/40">
-                  High Load
-                </span>
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-white tracking-tight">The Hypertrophy Matrix System</h3>
-                <p class="text-xs font-medium font-sans mt-1 text-zinc-500">Ditch the junk volume. Force real myofibrillar growth.</p>
-              </div>
-              <p class="text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                An advanced training curriculum engineered around mechanical tension, muscle-length dynamics, and progressive overload. Skip the plateaus and pack on dense, powerful tissue.
-              </p>
-              <hr class="border-zinc-900" />
-              <div class="space-y-3">
-                <p class="text-[10px] font-semibold text-zinc-500 font-mono uppercase tracking-wider">Features Included:</p>
-                <ul class="space-y-2.5 text-xs text-zinc-300">
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>100% Customized Training Split (Gym/Home focus)</span>
-                  </li>
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Targeted Volume, Rep-Ranges & RIR guidelines</span>
-                  </li>
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Biomechanical form correction via video logs</span>
-                  </li>
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Systematic Fatigue Audit & strategic deloads</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="mt-8 pt-6 border-t border-zinc-900 space-y-4">
-              <div class="grid grid-cols-2 gap-2 text-left">
-                <div>
-                  <span class="text-[9px] font-mono text-zinc-650 uppercase block mb-0.5 text-zinc-500">Timeline:</span>
-                  <span class="text-xs text-zinc-300 font-bold">12-Week Phase</span>
-                </div>
-                <div>
-                  <span class="text-[9px] font-mono text-zinc-650 uppercase block mb-0.5 text-zinc-500">Focus Group:</span>
-                  <span class="text-xs text-zinc-300 font-bold leading-tight">Strength & Growth</span>
-                </div>
-              </div>
-              <p class="text-[11px] text-zinc-500 leading-normal italic">
-                <strong>Best for:</strong> Hardgainers or intermediate lifters wanting structured strength progressions.
-              </p>
-              <button onclick="selectGoal('muscle')" class="w-full font-bold text-xs py-3.5 rounded-xl transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5 border bg-zinc-900 hover:bg-zinc-800 text-white border-zinc-805 group">
-                <span>Select & Tailor</span>
-                <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
-              </button>
-            </div>
+        {/* 3. SERVICES/OFFERINGS PACKAGE SECTION */}
+        <section id="packages-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <div className="text-center max-w-xl mx-auto space-y-3">
+            <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">
+              High-Science Blueprints
+            </span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">CORE PROTOCOLS & PACKAGES</h2>
+            <p className="text-zinc-400 text-sm">
+              No generic advice. Every single protocol below is customized specifically for your physical body, metabolic trends, biofeedback tracking, and lifestyle constraints.
+            </p>
           </div>
 
-          <!-- Package 3 (Flagship) -->
-          <div class="relative bg-zinc-950 border border-[#bfff00]/30 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-[#bfff00]/5 shadow-xl transition-all duration-300">
-            <!-- Flagship badge -->
-            <div class="absolute top-0 right-8 -translate-y-1/2 bg-[#bfff00] text-black font-extrabold text-[9px] font-mono uppercase px-3 py-1 rounded-full tracking-widest shadow-lg flex items-center gap-1.5 border border-black/10 animate-pulse">
-              <i data-lucide="flame" class="h-3 w-3 fill-black strike-[2.5]"></i>
-              <span>Flagship Protocol</span>
-            </div>
-
-            <div class="space-y-5">
-              <div class="flex justify-between items-start">
-                <div class="p-3 rounded-xl border bg-[#bfff00]/10 border-[#bfff00]/20 text-[#bfff00]">
-                  <i data-lucide="zap" class="h-6 w-6"></i>
-                </div>
-                <span class="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded border text-red-400 bg-red-950/40 border-red-900/40">
-                  Extreme Load
-                </span>
-              </div>
-              <div>
-                <h3 class="text-xl font-bold text-white tracking-tight">The Single-Digit Shred Protocol</h3>
-                <p class="text-xs font-medium font-mono text-lime-400 mt-1">The executive biological roadmap to extreme conditioning.</p>
-              </div>
-              <p class="text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                My signature, ultra-comprehensive coaching program. Designed to safely strip body fat down to single digits while fully maintaining and highlighting lean muscle mass.
-              </p>
-              <hr class="border-zinc-900" />
-              <div class="space-y-3">
-                <p class="text-[10px] font-semibold text-zinc-500 font-mono uppercase tracking-wider">Features Included:</p>
-                <ul class="space-y-2.5 text-xs text-zinc-300">
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-[#bfff00] shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Simultaneous Hypertrophy & Fat-Loss guidelines (Recomp)</span>
-                  </li>
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-[#bfff00] shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Daily Weight, Cardio & Steps tracking dashboards</span>
-                  </li>
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-[#bfff00] shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>Advanced leptin manipulation & refeed strategies</span>
-                  </li>
-                  <li class="flex items-start gap-2.5">
-                    <i data-lucide="check" class="h-3.5 w-3.5 text-[#bfff00] shrink-0 mt-0.5 stroke-[3.5]"></i>
-                    <span>24/7 direct communication & video mechanics reviews</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="mt-8 pt-6 border-t border-zinc-900 space-y-4">
-              <div class="grid grid-cols-2 gap-2 text-left">
-                <div>
-                  <span class="text-[9px] font-mono text-zinc-650 uppercase block mb-0.5 text-zinc-500">Timeline:</span>
-                  <span class="text-xs text-zinc-300 font-bold">16-Week Phase</span>
-                </div>
-                <div>
-                  <span class="text-[9px] font-mono text-zinc-650 uppercase block mb-0.5 text-zinc-500">Focus Group:</span>
-                  <span class="text-xs text-zinc-300 font-bold leading-tight">Extreme Definition</span>
-                </div>
-              </div>
-              <p class="text-[11px] text-zinc-500 leading-normal italic">
-                <strong>Best for:</strong> Dedicated individuals seeking high-performance conditioning status.
-              </p>
-              <button onclick="selectGoal('fat-loss')" class="w-full font-bold text-xs py-3.5 rounded-xl transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5 border bg-[#bfff00] hover:bg-white text-black border-transparent shadow-[#bfff00]/20 shadow-md group">
-                <span>Select & Shred</span>
-                <i data-lucide="arrow-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-1"></i>
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- 4. INTERACTIVE CALORIC CALCULATOR SECTION -->
-      <section id="calibrator-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative bg-zinc-950 border border-zinc-850 rounded-3xl p-6 md:p-10 overflow-hidden shadow-2xl">
-          <!-- Absolute blur gradients -->
-          <div class="absolute top-0 right-0 w-80 h-80 bg-lime-500/5 rounded-full blur-3xl pointer-events-none"></div>
-          <div class="absolute bottom-0 left-0 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Controls panel (5 columns grid) -->
-            <div class="lg:col-span-5 space-y-6">
-              <div class="flex items-center gap-3">
-                <div class="p-2 bg-lime-950/40 border border-lime-800/50 rounded-xl">
-                  <i data-lucide="calculator" class="h-6 w-6 text-lime-400"></i>
+            {/* Package 1 */}
+            <div className="relative bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:border-zinc-700 shadow-lg transition-all duration-300">
+              <div className="space-y-5">
+                <div className="flex justify-between items-start">
+                  <div className="p-3 rounded-xl border bg-zinc-900 border-zinc-850 text-zinc-300">
+                    <Apple className="h-6 w-6" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded border text-green-400 bg-green-950/30 border-green-900/40">
+                    Medium Load
+                  </span>
                 </div>
                 <div>
-                  <span class="text-xs uppercase tracking-widest text-[#bfff00] font-mono font-medium">Metabolic Physics</span>
-                  <h3 class="text-2xl font-bold tracking-tight text-white">Macro Calibrator</h3>
+                  <h3 className="text-xl font-bold text-white tracking-tight">The Metabolic Fuel Blueprint</h3>
+                  <p className="text-xs font-medium font-sans mt-1 text-zinc-500">Unshackle your diet. Fuel your aesthetic dominance.</p>
+                </div>
+                <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                  A tailored nutrition architecture calculated using your precise lean body mass (LBM) and daily energy outputs. No miserable food restrictions—just real, science-driven fuel parameters.
+                </p>
+                <hr className="border-zinc-900" />
+                <div className="space-y-3">
+                  <p className="text-[10px] font-semibold text-zinc-500 font-mono uppercase tracking-wider">Features Included:</p>
+                  <ul className="space-y-2.5 text-xs text-zinc-300">
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Custom Macro & Calorie Targets adjusted dynamically</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Flexible Dieting Guide (IIFYM) with sample meals</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Digestive Health & Micronutrient optimization list</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Hydration, Sodium & Workout-nutrition protocols</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
 
-              <p class="text-zinc-400 text-xs sm:text-sm leading-relaxed">
-                Estimate your optimal daily caloric intake and macronutrient profiles calibrated on high-level biochemical training standards. Ready to swap guesswork for biological certainty?
-              </p>
-
-              <!-- Calculator Inputs -->
-              <div class="space-y-4 pt-2">
-                <!-- Systems & Gender options row -->
-                <div class="grid grid-cols-2 gap-4">
+              <div className="mt-8 pt-6 border-t border-zinc-900 space-y-4">
+                <div className="grid grid-cols-2 gap-2 text-left">
                   <div>
-                    <label class="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2">Systems</label>
-                    <div class="flex bg-zinc-900 border border-zinc-800 p-1 rounded-xl">
-                      <button type="button" id="btn-metric" onclick="setSystemUnit('metric')" class="flex-1 text-xs py-2 rounded-lg font-medium transition-all bg-zinc-800 text-lime-400 font-mono">
-                        METRIC
-                      </button>
-                      <button type="button" id="btn-imperial" onclick="setSystemUnit('imperial')" class="flex-1 text-xs py-2 rounded-lg font-medium transition-all text-zinc-450 text-zinc-400 hover:text-white">
-                        IMPERIAL
-                      </button>
-                    </div>
+                    <span className="text-[9px] font-mono text-zinc-500 uppercase block mb-0.5">Timeline:</span>
+                    <span className="text-xs text-zinc-300 font-bold">Monthly / Recurring</span>
                   </div>
-
                   <div>
-                    <label class="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2">Gender</label>
-                    <div class="flex bg-zinc-900 border border-zinc-800 p-1 rounded-xl">
-                      <button type="button" id="btn-male" onclick="setGenderVal('male')" class="flex-1 text-xs py-2 rounded-lg font-medium transition-all bg-zinc-805 text-white bg-zinc-800">
-                        MALE
-                      </button>
-                      <button type="button" id="btn-female" onclick="setGenderVal('female')" class="flex-1 text-xs py-2 rounded-lg font-medium transition-all text-zinc-450 text-zinc-400 hover:text-white">
-                        FEMALE
-                      </button>
-                    </div>
+                    <span class="text-[9px] font-mono text-zinc-500 uppercase block mb-0.5">Focus Group:</span>
+                    <span className="text-xs text-zinc-300 font-bold leading-tight">Nutrition Only</span>
                   </div>
                 </div>
-
-                <!-- Parameters inputs row -->
-                <div class="grid grid-cols-3 gap-3">
-                  <div>
-                    <label id="lbl-weight" class="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-1.5">Weight (kg)</label>
-                    <input type="number" id="input-weight" value="80" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors font-mono" />
-                  </div>
-                  <div>
-                    <label id="lbl-height" class="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-1.5">Height (cm)</label>
-                    <input type="number" id="input-height" value="180" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors font-mono" />
-                  </div>
-                  <div>
-                    <label class="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-1.5">Age (yrs)</label>
-                    <input type="number" id="input-age" value="26" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors font-mono" />
-                  </div>
-                </div>
-
-                <!-- Activity Rate option -->
-                <div>
-                  <label class="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2">Activity Frequency</label>
-                  <select id="select-activity" class="w-full bg-zinc-900 border border-zinc-850 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-zinc-700 transition-colors">
-                    <option value="1.2">Sedentary (No formal exercise / Desk job)</option>
-                    <option value="1.375">Lightly Active (1-3 gym workouts / week)</option>
-                    <option value="1.55" selected>Moderately Active (3-5 intense lifting sessions / week)</option>
-                    <option value="1.725">Very Active (6-7 deep hypertrophic workouts or physical labor)</option>
-                  </select>
-                </div>
-
-                <!-- Goal Option -->
-                <div>
-                  <label class="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2">Primary Physique Target</label>
-                  <div class="grid grid-cols-3 gap-2 bg-zinc-900/60 p-1 border border-zinc-800 rounded-xl">
-                    <button type="button" id="btn-goal-cut" onclick="setPhyGoal('cut')" class="py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase bg-orange-950/40 border border-orange-850/50 text-orange-400">
-                      Fat Shred
-                    </button>
-                    <button type="button" id="btn-goal-recomp" onclick="setPhyGoal('recomp')" class="py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase text-zinc-400 hover:text-white">
-                      Recomp
-                    </button>
-                    <button type="button" id="btn-goal-bulk" onclick="setPhyGoal('bulk')" class="py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase text-zinc-400 hover:text-white">
-                      Muscle Build
-                    </button>
-                  </div>
-                </div>
-
-                <button type="button" onclick="triggerCalibrator()" class="w-full mt-2 bg-white text-black font-semibold text-sm py-4 rounded-xl shadow-lg hover:bg-[#bfff00] transition-all cursor-pointer flex items-center justify-center gap-2 group">
-                  <span id="cal-btn-text">CALCULATE MY BLUEPRINT</span>
-                  <i data-lucide="chevron-right" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
+                <p className="text-[11px] text-zinc-500 leading-normal italic">
+                  <strong>Best for:</strong> Busy professionals, plateaued lifters, and flexible eating enthusiasts.
+                </p>
+                <button 
+                  onClick={() => handleSelectProgram('meal-plan')} 
+                  className="w-full font-bold text-xs py-3.5 rounded-xl transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5 border bg-zinc-900 hover:bg-zinc-805 text-white border-zinc-800 hover:border-zinc-700 group duration-300"
+                >
+                  <span>Select & Tailor</span>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                 </button>
               </div>
             </div>
 
-            <!-- Results display (7 columns grid) -->
-            <div class="lg:col-span-7 bg-zinc-900/40 border border-zinc-850/50 rounded-2xl p-6 md:p-8 min-h-[420px] flex flex-col justify-between">
+            {/* Package 2 */}
+            <div className="relative bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between hover:border-zinc-700 shadow-lg transition-all duration-300">
+              <div className="space-y-5">
+                <div className="flex justify-between items-start">
+                  <div className="p-3 rounded-xl border bg-zinc-900 border-zinc-850 text-zinc-300">
+                    <Dumbbell className="h-6 w-6" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded border text-amber-400 bg-amber-950/30 border-amber-900/40">
+                    High Load
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white tracking-tight">The Hypertrophy Matrix System</h3>
+                  <p className="text-xs font-medium font-sans mt-1 text-zinc-500">Ditch the junk volume. Force real myofibrillar growth.</p>
+                </div>
+                <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                  An advanced training curriculum engineered around mechanical tension, muscle-length dynamics, and progressive overload. Skip the plateaus and pack on dense, powerful tissue.
+                </p>
+                <hr className="border-zinc-900" />
+                <div className="space-y-3">
+                  <p className="text-[10px] font-semibold text-zinc-500 font-mono uppercase tracking-wider">Features Included:</p>
+                  <ul className="space-y-2.5 text-xs text-zinc-300">
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>100% Customized Training Split (Gym/Home focus)</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Targeted Volume, Rep-Ranges & RIR guidelines</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Biomechanical form correction via video logs</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-lime-400 shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Systematic Fatigue Audit & strategic deloads</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-zinc-900 space-y-4">
+                <div className="grid grid-cols-2 gap-2 text-left">
+                  <div>
+                    <span className="text-[9px] font-mono text-zinc-500 uppercase block mb-0.5">Timeline:</span>
+                    <span className="text-xs text-zinc-300 font-bold">12-Week Phase</span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-mono text-zinc-500 uppercase block mb-0.5">Focus Group:</span>
+                    <span className="text-xs text-zinc-300 font-bold leading-tight">Strength & Growth</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-zinc-500 leading-normal italic">
+                  <strong>Best for:</strong> Hardgainers or intermediate lifters wanting structured strength progressions.
+                </p>
+                <button 
+                  onClick={() => handleSelectProgram('muscle')} 
+                  className="w-full font-bold text-xs py-3.5 rounded-xl transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5 border bg-zinc-900 hover:bg-zinc-805 text-white border-zinc-800 hover:border-zinc-700 group duration-300"
+                >
+                  <span>Select & Tailor</span>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </button>
+              </div>
+            </div>
+
+            {/* Package 3 (Flagship) */}
+            <div className="relative bg-zinc-950 border border-[#bfff00]/30 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-[#bfff00]/5 shadow-xl transition-all duration-300">
+              {/* Flagship badge */}
+              <div className="absolute top-0 right-8 -translate-y-1/2 bg-[#bfff00] text-black font-extrabold text-[9px] font-mono uppercase px-3 py-1 rounded-full tracking-widest shadow-lg flex items-center gap-1.5 border border-black/10 animate-pulse">
+                <Flame className="h-3 w-3 fill-black stroke-[2.5]" />
+                <span>Flagship Protocol</span>
+              </div>
+
+              <div className="space-y-5">
+                <div className="flex justify-between items-start">
+                  <div className="p-3 rounded-xl border bg-[#bfff00]/10 border-[#bfff00]/20 text-[#bfff00]">
+                    <Zap className="h-6 w-6" />
+                  </div>
+                  <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 rounded border text-red-400 bg-red-950/40 border-red-900/40">
+                    Extreme Load
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white tracking-tight">The Single-Digit Shred Protocol</h3>
+                  <p className="text-xs font-medium font-mono text-lime-400 mt-1">The executive biological roadmap to extreme conditioning.</p>
+                </div>
+                <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">
+                  My signature, ultra-comprehensive coaching program. Designed to safely strip body fat down to single digits while fully maintaining and highlighting lean muscle mass.
+                </p>
+                <hr className="border-zinc-900" />
+                <div className="space-y-3">
+                  <p className="text-[10px] font-semibold text-zinc-500 font-mono uppercase tracking-wider">Features Included:</p>
+                  <ul className="space-y-2.5 text-xs text-zinc-300">
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-[#bfff00] shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Simultaneous Hypertrophy & Fat-Loss guidelines (Recomp)</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-[#bfff00] shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Daily Weight, Cardio & Steps tracking dashboards</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-[#bfff00] shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>Advanced leptin manipulation & refeed strategies</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <Check className="h-3.5 w-3.5 text-[#bfff00] shrink-0 mt-0.5 stroke-[3.5]" />
+                      <span>24/7 direct communication & video mechanics reviews</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-zinc-900 space-y-4">
+                <div className="grid grid-cols-2 gap-2 text-left">
+                  <div>
+                    <span className="text-[9px] font-mono text-zinc-500 uppercase block mb-0.5">Timeline:</span>
+                    <span className="text-xs text-zinc-300 font-bold">16-Week Phase</span>
+                  </div>
+                  <div>
+                    <span className="text-[9px] font-mono text-zinc-500 uppercase block mb-0.5">Focus Group:</span>
+                    <span className="text-xs text-zinc-300 font-bold leading-tight">Extreme Definition</span>
+                  </div>
+                </div>
+                <p className="text-[11px] text-zinc-500 leading-normal italic">
+                  <strong>Best for:</strong> Dedicated individuals seeking high-performance conditioning status.
+                </p>
+                <button 
+                  onClick={() => handleSelectProgram('fat-loss')} 
+                  className="w-full font-bold text-xs py-3.5 rounded-xl transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5 border bg-[#bfff00] hover:bg-white text-black border-transparent shadow-[#bfff00]/20 shadow-md group duration-300"
+                >
+                  <span>Select & Shred</span>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* 4. INTERACTIVE CALORIC CALCULATOR SECTION */}
+        <section id="calibrator-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative bg-zinc-950 border border-zinc-850 rounded-3xl p-6 md:p-10 overflow-hidden shadow-2xl">
+            {/* Ambient background glows */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-lime-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start">
               
-              <!-- Empty Slate View -->
-              <div id="calc-empty-slate" class="flex-grow flex flex-col items-center justify-center text-center py-10">
-                <i data-lucide="activity" class="h-12 w-12 text-zinc-650 mb-4 stroke-[1.2] text-zinc-600"></i>
-                <h4 class="text-zinc-300 font-semibold mb-1 text-sm md:text-md">Awaiting Data Structs</h4>
-                <p class="text-zinc-500 text-xs max-w-xs">Fill out your body metrics and targets to generate customized caloric partitions.</p>
-              </div>
-
-              <!-- Computed Results View -->
-              <div id="calc-computed-view" class="hidden flex-grow flex flex-col justify-between space-y-6">
-                <div>
-                  <div class="flex items-center justify-between border-b border-zinc-850 pb-4 mb-4">
-                    <div>
-                      <span class="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">CALCULATION COMPLETE</span>
-                      <h4 class="text-lg font-bold text-white tracking-tight">Your Custom Physiological Profile</h4>
-                    </div>
-                    <div class="flex items-center gap-1.5 px-2.5 py-1 bg-lime-950/40 border border-lime-800/30 rounded-full">
-                      <i data-lucide="flame" class="h-3.5 w-3.5 text-[#bfff00]"></i>
-                      <span id="badge-calculated-goal" class="text-[10px] font-mono font-medium text-[#bfff00] uppercase">CUT PROTOCOL</span>
-                    </div>
+              {/* Controls Panel */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-lime-950/40 border border-lime-800/50 rounded-xl">
+                    <Calculator className="h-6 w-6 text-lime-400" />
                   </div>
-
-                  <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="bg-zinc-950 border border-zinc-850 p-4 rounded-xl">
-                      <p class="text-[10px] font-mono text-zinc-500 uppercase mb-1">Estimated Maintenance (TDEE)</p>
-                      <p class="text-xl sm:text-2xl font-bold font-mono text-zinc-300"><span id="lbl-tdee-out">2850</span> <span class="text-xs font-sans text-zinc-500 font-normal">kcal/day</span></p>
-                    </div>
-                    <div class="bg-zinc-950 border border-[#bfff00]/30 p-4 rounded-xl relative overflow-hidden">
-                      <div class="absolute top-0 right-0 w-2 h-2 bg-[#bfff00] rounded-bl-sm"></div>
-                      <p class="text-[10px] font-mono text-[#bfff00] uppercase mb-1">Target Daily Intake</p>
-                      <p class="text-xl sm:text-2xl font-bold font-mono text-white"><span id="lbl-target-out">2350</span> <span class="text-xs font-sans text-zinc-400 font-normal">kcal/day</span></p>
-                    </div>
-                  </div>
-
-                  <h5 class="text-xs font-mono font-semibold tracking-wider text-zinc-450 uppercase mb-3 text-zinc-400">Daily Macronutrient Targets</h5>
-
-                  <div class="space-y-3.5">
-                    <!-- Protein bar -->
-                    <div>
-                      <div class="flex justify-between text-xs mb-1.5">
-                        <span class="text-zinc-300 font-semibold flex items-center gap-1.5">
-                          Protein <span class="text-[10px] text-lime-400 font-normal font-mono">(Muscle Preservation)</span>
-                        </span>
-                        <span class="font-mono text-white font-medium"><span id="lbl-prot-out">180</span>g <span id="lbl-prot-cal-out" class="text-zinc-500 font-sans text-[10px]">(720 kcal)</span></span>
-                      </div>
-                      <div class="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
-                        <div class="h-full bg-lime-400 rounded-full" style="width: 35%"></div>
-                      </div>
-                    </div>
-
-                    <!-- Carbs bar -->
-                    <div>
-                      <div class="flex justify-between text-xs mb-1.5">
-                        <span class="text-zinc-300 font-semibold flex items-center gap-1.5">
-                          Carbohydrates <span class="text-[10px] text-zinc-500 font-normal font-mono">(Glycogen Fuel)</span>
-                        </span>
-                        <span class="font-mono text-white font-medium"><span id="lbl-carb-out">250</span>g <span id="lbl-carb-cal-out" class="text-zinc-500 font-sans text-[10px]">(1000 kcal)</span></span>
-                      </div>
-                      <div class="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
-                        <div class="h-full bg-zinc-400 rounded-full" style="width: 45%"></div>
-                      </div>
-                    </div>
-
-                    <!-- Fat bar -->
-                    <div>
-                      <div class="flex justify-between text-xs mb-1.5">
-                        <span class="text-zinc-300 font-semibold flex items-center gap-1.5">
-                          Fats <span class="text-[10px] text-zinc-500 font-normal font-mono">(Hormonal Support)</span>
-                        </span>
-                        <span class="font-mono text-white font-medium"><span id="lbl-fat-out">65</span>g <span id="lbl-fat-cal-out" class="text-zinc-500 font-sans text-[10px]">(585 kcal)</span></span>
-                      </div>
-                      <div class="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
-                        <div class="h-full bg-orange-500/80 rounded-full" style="width: 20%"></div>
-                      </div>
-                    </div>
+                  <div>
+                    <span className="text-xs uppercase tracking-widest text-[#bfff00] font-mono font-medium block">Metabolic Physics</span>
+                    <h3 className="text-2xl font-bold tracking-tight text-white">Macro Calibrator</h3>
                   </div>
                 </div>
 
-                <div class="pt-4 border-t border-zinc-850">
-                  <div class="flex items-start gap-2.5 mb-3.5 bg-zinc-950/80 p-3 rounded-lg border border-zinc-850/50">
-                    <i data-lucide="shield-check" class="h-5 w-5 text-lime-450 text-lime-400 shrink-0 mt-0.5"></i>
-                    <p class="text-[11px] text-zinc-400 leading-normal">
-                      Note: These are estimates grounded in baseline metabolic formulas. For full adaptation, direct professional supervision by Ishan accounts for biofeedback modifications.
-                    </p>
+                <p className="text-zinc-450 text-xs sm:text-sm leading-relaxed text-zinc-400">
+                  Estimate your optimal daily caloric intake and macronutrient profiles calibrated on high-level biochemical training standards. Ready to swap guesswork for biological certainty?
+                </p>
+
+                {/* Calculator Forms Setup */}
+                <div className="space-y-4 pt-2">
+                  
+                  {/* Unit System & Gender Options */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2">System</label>
+                      <div className="flex bg-zinc-900 border border-zinc-800 p-1 rounded-xl">
+                        <button 
+                          type="button" 
+                          onClick={() => handleSystemChange('metric')} 
+                          className={`flex-1 text-xs py-2 rounded-lg font-medium transition-all font-mono ${systemUnit === 'metric' ? 'bg-zinc-800 text-lime-400' : 'text-zinc-400 hover:text-white'}`}
+                        >
+                          METRIC
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => handleSystemChange('imperial')} 
+                          className={`flex-1 text-xs py-2 rounded-lg font-medium transition-all font-mono ${systemUnit === 'imperial' ? 'bg-zinc-800 text-lime-400' : 'text-zinc-400 hover:text-white'}`}
+                        >
+                          IMPERIAL
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2">Gender</label>
+                      <div className="flex bg-zinc-900 border border-zinc-800 p-1 rounded-xl">
+                        <button 
+                          type="button" 
+                          onClick={() => { setSelectedGender('male'); setCalculatedTargetCal(null); }} 
+                          className={`flex-1 text-xs py-2 rounded-lg font-medium transition-all ${selectedGender === 'male' ? 'bg-zinc-800 text-white font-bold' : 'text-zinc-400 hover:text-whiteWith'}`}
+                        >
+                          MALE
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => { setSelectedGender('female'); setCalculatedTargetCal(null); }} 
+                          className={`flex-1 text-xs py-2 rounded-lg font-medium transition-all ${selectedGender === 'female' ? 'bg-zinc-800 text-white font-bold' : 'text-zinc-400 hover:text-white'}`}
+                        >
+                          FEMALE
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <button type="button" onclick="autoFillCalAndGoal()" class="w-full bg-zinc-800 border border-zinc-700 hover:border-lime-500 hover:bg-zinc-900 text-white font-semibold text-xs py-3 rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2">
-                    🚀 Auto-fill into coaching request
+
+                  {/* Weight, Height, Age Inputs */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-1.5">
+                        {systemUnit === 'metric' ? 'Weight (kg)' : 'Weight (lbs)'}
+                      </label>
+                      <input 
+                        type="number" 
+                        value={weight}
+                        onChange={(e) => { setWeight(parseFloat(e.target.value) || 0); setCalculatedTargetCal(null); }}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors font-mono" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-1.5">
+                        {systemUnit === 'metric' ? 'Height (cm)' : 'Height (in)'}
+                      </label>
+                      <input 
+                        type="number" 
+                        value={height}
+                        onChange={(e) => { setHeight(parseFloat(e.target.value) || 0); setCalculatedTargetCal(null); }}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors font-mono" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-1.5">Age (yrs)</label>
+                      <input 
+                        type="number" 
+                        value={age}
+                        onChange={(e) => { setAge(parseInt(e.target.value) || 0); setCalculatedTargetCal(null); }}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors font-mono" 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Activity selection */}
+                  <div>
+                    <label className="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2 font-medium">Activity Frequency</label>
+                    <select 
+                      value={activity} 
+                      onChange={(e) => { setActivity(e.target.value); setCalculatedTargetCal(null); }}
+                      className="w-full bg-zinc-900 border border-zinc-850 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-zinc-700 transition-colors cursor-pointer"
+                    >
+                      <option value="1.2">Sedentary (No formal exercise / Desk job)</option>
+                      <option value="1.375">Lightly Active (1-3 gym workouts / week)</option>
+                      <option value="1.55">Moderately Active (3-5 intense lifting sessions / week)</option>
+                      <option value="1.725">Very Active (6-7 deep hypertrophic workouts or physical labor)</option>
+                    </select>
+                  </div>
+
+                  {/* Target Goal Selector */}
+                  <div>
+                    <label className="block text-xs font-mono text-zinc-500 uppercase tracking-wider mb-2 font-medium">Primary Physique Target</label>
+                    <div className="grid grid-cols-3 gap-2 bg-zinc-900/60 p-1 border border-zinc-800 rounded-xl">
+                      <button 
+                        type="button" 
+                        onClick={() => { setTrackingGoal('cut'); setCalculatedTargetCal(null); }} 
+                        className={`py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase ${trackingGoal === 'cut' ? 'bg-orange-950/40 border border-orange-850/50 text-orange-400' : 'text-zinc-400 hover:text-white'}`}
+                      >
+                        Fat Shred
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => { setTrackingGoal('recomp'); setCalculatedTargetCal(null); }} 
+                        className={`py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase ${trackingGoal === 'recomp' ? 'bg-zinc-800 border border-zinc-700 text-white' : 'text-zinc-400 hover:text-white'}`}
+                      >
+                        Recomp
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => { setTrackingGoal('bulk'); setCalculatedTargetCal(null); }} 
+                        className={`py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase ${trackingGoal === 'bulk' ? 'bg-lime-950/40 border border-lime-800/50 text-lime-450 text-lime-400' : 'text-zinc-400 hover:text-white'}`}
+                      >
+                        Muscle Build
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Calculate Action */}
+                  <button 
+                    type="button" 
+                    onClick={calculateBlueprint}
+                    className="w-full mt-2 bg-white text-black font-semibold text-sm py-4 rounded-xl shadow-lg hover:bg-[#bfff00] transition-all cursor-pointer flex items-center justify-center gap-2 group duration-300 font-bold"
+                  >
+                    <span>{isCalibrating ? 'CALIBRATING PHYSIOLOGY...' : 'CALCULATE MY BLUEPRINT'}</span>
+                    <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </button>
+
                 </div>
+              </div>
+
+              {/* Computations Display Side panel */}
+              <div className="lg:col-span-7 bg-zinc-900/40 border border-zinc-850/50 rounded-2xl p-6 md:p-8 min-h-[420px] flex flex-col justify-between">
+                
+                {calculatedTargetCal === null ? (
+                  /* Empty slate state */
+                  <div className="flex-grow flex flex-col items-center justify-center text-center py-10">
+                    <Activity className="h-12 w-12 text-zinc-600 mb-4 stroke-[1.2]" />
+                    <h4 className="text-zinc-300 font-semibold mb-1 text-sm md:text-md">Awaiting Data Parameters</h4>
+                    <p className="text-zinc-500 text-xs max-w-xs">Fill out your body metrics and targets to generate customized caloric partitions.</p>
+                  </div>
+                ) : (
+                  /* Results Computed State */
+                  <div className="flex-grow flex flex-col justify-between space-y-6">
+                    <div>
+                      <div className="flex items-center justify-between border-b border-zinc-850 pb-4 mb-4">
+                        <div>
+                          <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase block">CALCULATION COMPLETE</span>
+                          <h4 className="text-lg font-bold text-white tracking-tight">Your Custom Physiological Profile</h4>
+                        </div>
+                        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${
+                          trackingGoal === 'cut' ? 'bg-orange-950/20 border-orange-850/50 text-orange-400' : 
+                          trackingGoal === 'bulk' ? 'bg-lime-950/20 border-lime-850/50 text-[#bfff00]' : 
+                          'bg-zinc-800 border-zinc-700 text-zinc-200'
+                        }`}>
+                          <Flame className="h-3.5 w-3.5 animate-pulse" />
+                          <span className="text-[10px] font-mono font-bold uppercase">{trackingGoal} protocol</span>
+                        </div>
+                      </div>
+
+                      {/* Calorie Stats */}
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="bg-zinc-950 border border-zinc-850 p-4 rounded-xl">
+                          <p className="text-[10px] font-mono text-zinc-500 uppercase mb-1">Estimated Maintenance (TDEE)</p>
+                          <p className="text-xl sm:text-2xl font-bold font-mono text-zinc-300">
+                            {calculatedTdee} <span className="text-xs font-sans text-zinc-500 font-normal">kcal/day</span>
+                          </p>
+                        </div>
+                        <div className="bg-zinc-950 border border-[#bfff00]/30 p-4 rounded-xl relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-2 h-2 bg-[#bfff00] rounded-bl-sm"></div>
+                          <p className="text-[10px] font-mono text-[#bfff00] uppercase mb-1">Target Daily Intake</p>
+                          <p className="text-xl sm:text-2xl font-bold font-mono text-white">
+                            {calculatedTargetCal} <span className="text-xs font-sans text-zinc-400 font-normal">kcal/day</span>
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Macronutrient target values representation */}
+                      <h5 className="text-xs font-mono font-semibold tracking-wider text-zinc-400 uppercase mb-3">Daily Macronutrient Targets</h5>
+
+                      <div className="space-y-4">
+                        {/* Protein bar */}
+                        <div>
+                          <div className="flex justify-between text-xs mb-1.5">
+                            <span className="text-zinc-300 font-semibold flex items-center gap-1.5">
+                              Protein <span className="text-[10px] text-lime-400 font-normal font-mono">(Muscle Preservation)</span>
+                            </span>
+                            <span className="font-mono text-white font-medium">
+                              {macros?.protein}g <span className="text-zinc-500 font-sans text-[10px]">({macros ? Math.round(macros.proteinCals) : 0} kcal)</span>
+                            </span>
+                          </div>
+                          <div className="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
+                            <div className="h-full bg-lime-400 rounded-full" style={{ width: `${proteinPercent}%` }}></div>
+                          </div>
+                        </div>
+
+                        {/* Carbs bar */}
+                        <div>
+                          <div className="flex justify-between text-xs mb-1.5">
+                            <span className="text-zinc-300 font-semibold flex items-center gap-1.5">
+                              Carbohydrates <span className="text-[10px] text-zinc-405 text-zinc-400 font-normal font-mono">(Glycogen Fuel)</span>
+                            </span>
+                            <span className="font-mono text-white font-medium">
+                              {macros?.carb}g <span className="text-zinc-500 font-sans text-[10px]">({macros ? Math.round(macros.carbCals) : 0} kcal)</span>
+                            </span>
+                          </div>
+                          <div className="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
+                            <div className="h-full bg-zinc-400 rounded-full" style={{ width: `${carbPercent}%` }}></div>
+                          </div>
+                        </div>
+
+                        {/* Fats bar */}
+                        <div>
+                          <div className="flex justify-between text-xs mb-1.5">
+                            <span className="text-zinc-300 font-semibold flex items-center gap-1.5">
+                              Fats <span className="text-[10px] text-zinc-500 font-normal font-mono">(Hormonal Support)</span>
+                            </span>
+                            <span className="font-mono text-white font-medium">
+                              {macros?.fat}g <span className="text-zinc-500 font-sans text-[10px]">({macros ? Math.round(macros.fatCals) : 0} kcal)</span>
+                            </span>
+                          </div>
+                          <div className="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
+                            <div className="h-full bg-orange-500/80 rounded-full" style={{ width: `${fatPercent}%` }}></div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div className="pt-4 border-t border-zinc-850 space-y-3">
+                      <div className="flex items-start gap-2.5 bg-zinc-950/80 p-3 rounded-lg border border-zinc-850/50">
+                        <ShieldCheck className="h-5 w-5 text-lime-400 shrink-0 mt-0.5" />
+                        <p className="text-[11px] text-zinc-400 leading-normal">
+                          Note: These are estimates grounded in baseline metabolic formulas. For full adaptation, direct professional supervision by Ishan accounts for biofeedback modifications.
+                        </p>
+                      </div>
+                      <button 
+                        type="button" 
+                        onClick={handleAutofill}
+                        className="w-full bg-zinc-800 border border-zinc-700 hover:border-lime-500 hover:bg-zinc-900 text-white font-semibold text-xs py-3 rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 duration-300 cursor-pointer"
+                      >
+                        <Sparkles className="h-4 w-4 text-lime-400" />
+                        <span>Auto-fill into coaching request</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
               </div>
 
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- 5. BOOKING / APPLICATION FORM SECTION -->
-      <section id="inquiry-section" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-10 relative overflow-hidden shadow-2xl">
-          <div class="absolute top-0 left-0 w-80 h-80 bg-lime-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        {/* 5. BOOKING / APPLICATION FORM SECTION */}
+        <section id="inquiry-section" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-10 relative overflow-hidden shadow-2xl">
+            <div className="absolute top-0 left-0 w-80 h-80 bg-lime-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
-          <!-- Application Form Mode -->
-          <div id="form-unsubmitted-container">
-            <div class="max-w-xl mx-auto text-center mb-8">
-              <span class="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold bg-[#bfff00]/10 px-3 py-1 rounded-full border border-[#bfff00]/25">
-                Apply for Elite 1-on-1 Coaching
-              </span>
-              <h3 class="text-3xl font-extrabold text-white mt-3 tracking-tight">LET'S BUILD YOUR BIOLOGY.</h3>
-              <p class="text-zinc-400 text-sm mt-3">
-                Stop guessing. I choose to work with a small, highly dedicated roster of clients who are ready to respect science, train fiercely, and dominate their targets. Fill out your details, and let's craft your transformation roadmap.
-              </p>
-            </div>
-
-            <form id="coaching-inquiry-form" onsubmit="submitCoachingRequest(event)" class="space-y-5 max-w-2xl mx-auto">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">First & Last Name</label>
-                  <input type="text" id="form-name" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors" placeholder="Enter your name" />
-                </div>
-
-                <div>
-                  <label class="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">Your Best Email address</label>
-                  <input type="email" id="form-email" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors" placeholder="name@company.com" />
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">Primary Physique Target</label>
-                  <select id="form-goal" onchange="updateInquiryFormGoalDiagnosis()" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors cursor-pointer">
-                    <option value="fat-loss" selected>Ultimate Fat Loss (Shred Protocol)</option>
-                    <option value="muscle">Muscle Building (Hypertrophy Matrix)</option>
-                    <option value="recomp">Body Recomposition (Recomp Phase)</option>
-                    <option value="meal-plan">Customized Metabolic Meal Planning Only</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label class="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">Lifting Experience</label>
-                  <select id="form-exp" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors cursor-pointer">
-                    <option value="beginner">Less than 1 Year (Beginner basics)</option>
-                    <option value="intermediate" selected>1 to 3 Years (Standard Plateau range)</option>
-                    <option value="advanced">3+ Years (Advanced optimization)</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Preloaded calories box, populated dynamically -->
-              <div id="box-preloaded-calories" class="hidden bg-zinc-90 w-full bg-zinc-900 border border-lime-950 px-4 py-3 rounded-xl flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="flame" class="h-4 w-4 text-lime-400"></i>
-                  <span class="text-xs text-zinc-300 font-semibold">Preloaded Target Calories from Calibrator:</span>
-                </div>
-                <span id="lbl-form-calories" class="text-xs font-mono text-lime-400 font-bold bg-[#bfff00]/10 px-2.5 py-0.5 rounded border border-[#bfff00]/25">
-                  2350 kcal/day
-                </span>
-              </div>
-
+            {!isSubmitted ? (
+              /* Application Form Active */
               <div>
-                <label class="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">Current Hurdles & Lifestyle (Optional)</label>
-                <textarea id="form-msg" rows="3" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors resize-none" placeholder="Tell me a bit about your current weight, recovery challenges, or past goals so I can analyze your case..."></textarea>
-              </div>
-
-              <button type="submit" class="w-full bg-[#bfff00] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 group cursor-pointer">
-                <span id="form-btn-label">SUBMIT BLUEPRINT REQUEST</span>
-                <i data-lucide="send" class="h-4 w-4 transition-transform group-hover:translate-x-1"></i>
-              </button>
-            </form>
-          </div>
-
-          <!-- Application Success Mode -->
-          <div id="form-success-container" class="hidden max-w-2xl mx-auto py-8 text-center transition-all duration-300">
-            <div class="inline-flex p-4 bg-lime-955/40 bg-lime-950/40 border border-lime-800/40 rounded-full mb-6">
-              <i data-lucide="check-circle" class="h-10 w-10 text-lime-400"></i>
-            </div>
-
-            <h3 class="text-3xl font-extrabold text-white mb-2 tracking-tight">APPLICATION TRANSMITTED</h3>
-            <p class="text-zinc-400 text-sm max-w-md mx-auto mb-8">
-              Thank you, <span id="success-client-name" class="text-white font-bold">Client</span>! Your biometrics and program choice have been transmitted to Coach Ishan's queue. You will receive a direct reply within 12 hours.
-            </p>
-
-            <!-- Diagnosis Panel -->
-            <div class="bg-zinc-900 border border-zinc-805 rounded-2xl p-6 md:p-8 text-left space-y-5">
-              <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <div class="flex items-center gap-2">
-                  <i data-lucide="dumbbell" class="h-5 w-5 text-[#bfff00]"></i>
-                  <h4 class="text-sm font-extrabold text-white font-mono tracking-wider uppercase">ISHAN'S INSTANT HYPOTHESIS</h4>
+                <div className="max-w-xl mx-auto text-center mb-8">
+                  <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold bg-[#bfff00]/10 px-3 py-1 rounded-full border border-[#bfff00]/25">
+                    Apply for Elite 1-on-1 Coaching
+                  </span>
+                  <h3 className="text-3xl font-extrabold text-white mt-3 tracking-tight">LET'S BUILD YOUR BIOLOGY.</h3>
+                  <p className="text-zinc-400 text-sm mt-3">
+                    Stop guessing. I choose to work with a small, highly dedicated roster of clients who are ready to respect science, train fiercely, and dominate their targets. Fill out your details, and let's craft your transformation roadmap.
+                  </p>
                 </div>
-                <div id="success-badge-title" class="text-[10px] bg-lime-950/40 border border-lime-800/30 text-lime-400 px-2.5 py-0.5 rounded font-mono uppercase font-bold">
-                  HIGH THERMIC FOCUS
+
+                <form onSubmit={handleFormSubmit} className="space-y-5 max-w-2xl mx-auto">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">First & Last Name</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value={formName}
+                        onChange={(e) => setFormName(e.target.value)}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors" 
+                        placeholder="Enter your name" 
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">Your Best Email address</label>
+                      <input 
+                        type="email" 
+                        required 
+                        value={formEmail}
+                        onChange={(e) => setFormEmail(e.target.value)}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors" 
+                        placeholder="name@company.com" 
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">Primary Physique Target</label>
+                      <select 
+                        value={formGoal}
+                        onChange={(e) => setFormGoal(e.target.value)}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors cursor-pointer"
+                      >
+                        <option value="fat-loss">Ultimate Fat Loss (Shred Protocol)</option>
+                        <option value="muscle">Muscle Building (Hypertrophy Matrix)</option>
+                        <option value="recomp">Body Recomposition (Recomp Phase)</option>
+                        <option value="meal-plan">Customized Metabolic Meal Planning Only</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">Lifting Experience</label>
+                      <select 
+                        value={formExp}
+                        onChange={(e) => setFormExp(e.target.value)}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors cursor-pointer"
+                      >
+                        <option value="beginner">Less than 1 Year (Beginner basics)</option>
+                        <option value="intermediate">1 to 3 Years (Standard Plateau range)</option>
+                        <option value="advanced">3+ Years (Advanced optimization)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Preloaded Calories Box */}
+                  {preloadedCalories !== null && (
+                    <div className="bg-zinc-900 border border-lime-950 px-4 py-3 rounded-xl flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Flame className="h-4 w-4 text-lime-400" />
+                        <span className="text-xs text-zinc-300 font-semibold">Preloaded Target Calories from Calibrator:</span>
+                      </div>
+                      <span className="text-xs font-mono text-lime-400 font-bold bg-[#bfff00]/10 px-2.5 py-0.5 rounded border border-[#bfff00]/25">
+                        {preloadedCalories} kcal/day
+                      </span>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">Current Hurdles & Lifestyle (Optional)</label>
+                    <textarea 
+                      rows={3} 
+                      value={formMsg}
+                      onChange={(e) => setFormMsg(e.target.value)}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors resize-none" 
+                      placeholder="Tell me a bit about your current weight, recovery challenges, or past goals so I can analyze your case..."
+                    ></textarea>
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    className="w-full bg-[#bfff00] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 group cursor-pointer duration-300"
+                  >
+                    <span>{isSubmitting ? "TRANSMITTING TO ISHAN'S CORPS..." : "SUBMIT BLUEPRINT REQUEST"}</span>
+                    <Send className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </button>
+                </form>
+              </div>
+            ) : (
+              /* Success states animation */
+              <div className="max-w-2xl mx-auto py-8 text-center">
+                <div className="inline-flex p-4 bg-lime-950/40 border border-lime-800/40 rounded-full mb-6">
+                  <CheckCircle className="h-10 w-10 text-lime-400" />
                 </div>
-              </div>
 
-              <div>
-                <span class="text-xs font-mono text-zinc-500 uppercase block mb-1">Target Protocol</span>
-                <p id="success-diagnosis-title" class="text-md text-white font-semibold">Single-Digit Fat Shred Protocol Blueprint Selected</p>
-              </div>
+                <h3 className="text-3xl font-extrabold text-white mb-2 tracking-tight">APPLICATION TRANSMITTED</h3>
+                <p className="text-zinc-450 text-sm max-w-sm mx-auto mb-8 text-zinc-400">
+                  Thank you, <span className="text-white font-bold">{formName}</span>! Your biometrics and program choice have been transmitted to Coach Ishan's queue. You will receive a direct email reply within 12 hours to: <span className="text-lime-400 underline font-mono text-xs">{formEmail}</span>.
+                </p>
 
-              <div class="space-y-3 pt-1">
-                <span class="text-xs font-mono text-zinc-500 uppercase block">Critical Biomechanical Constraints:</span>
-                <ul id="success-diagnosis-list" class="space-y-2.5 text-xs text-zinc-300 leading-relaxed">
-                  <!-- JS insertion -->
-                </ul>
-              </div>
+                {/* Instant Strategy Analysis Diagnosis Panel */}
+                <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 md:p-8 text-left space-y-5">
+                  <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                    <div className="flex items-center gap-2">
+                      <Dumbbell className="h-5 w-5 text-[#bfff00]" />
+                      <h4 className="text-sm font-extrabold text-white font-mono tracking-wider uppercase">ISHAN'S INSTANT HYPOTHESIS</h4>
+                    </div>
+                    <div className="text-[10px] bg-lime-950/40 border border-lime-800/30 text-lime-400 px-2.5 py-0.5 rounded font-mono uppercase font-bold">
+                      {currentStrategy.badge}
+                    </div>
+                  </div>
 
-              <div class="pt-4 border-t border-zinc-850 flex items-center gap-3">
-                <div class="h-9 w-9 bg-zinc-80 w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-xs text-lime-404 text-[#bfff00] font-mono border border-zinc-700">
-                  IB
+                  <div>
+                    <span className="text-xs font-mono text-zinc-500 uppercase block mb-1">Target Protocol</span>
+                    <p className="text-md text-white font-semibold">{currentStrategy.title}</p>
+                  </div>
+
+                  <div className="space-y-3 pt-1">
+                    <span className="text-xs font-mono text-zinc-500 uppercase block">Critical Biomechanical Constraints:</span>
+                    <ul className="space-y-2.5 text-xs text-zinc-300 leading-relaxed">
+                      {currentStrategy.cues.map((cue, index) => (
+                        <li key={index} className="flex items-start gap-2.5 text-xs bg-zinc-950 p-2.5 rounded-lg border border-zinc-900">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#bfff00] shrink-0 mt-2"></span>
+                          <span>{cue}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="pt-4 border-t border-zinc-850 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center font-bold text-xs text-[#bfff00] font-mono border border-zinc-700">
+                      IB
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-white leading-none">Ishan Bajaj</p>
+                      <p className="text-[10px] text-zinc-500 mt-1 font-mono leading-none">Founder, Personal Fitness Coaching Portal</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p class="text-xs font-bold text-white leading-none">Ishan Bajaj</p>
-                  <p class="text-[10px] text-zinc-500 mt-1 font-mono leading-none">Founder, Personal Fitness Coaching Portal</p>
-                </div>
+
+                <button 
+                  onClick={handleResetForm} 
+                  className="mt-8 text-xs font-mono text-zinc-500 hover:text-white transition-colors uppercase border-b border-zinc-800 pb-0.5 cursor-pointer"
+                >
+                  ← Submit Another Inquiry / Change Data
+                </button>
               </div>
-            </div>
+            )}
 
-            <button onclick="resetInquiryForm()" class="mt-8 text-xs font-mono text-zinc-500 hover:text-white transition-colors uppercase border-b border-zinc-800 pb-0.5">
-              ← Submit Another Inquiry / Change Data
-            </button>
           </div>
+        </section>
 
-        </div>
-      </section>
-
-      <!-- 6. FAQ SECTION -->
-      <section id="faq-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
-          <!-- Sticky control filters (4 columns grid) -->
-          <div class="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
-            <div class="space-y-3">
-              <span class="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">
-                Cognitive Interlock
-              </span>
-              <h2 class="text-3xl font-extrabold text-white tracking-tight">QUESTIONS & INTELLECT</h2>
-              <p class="text-zinc-400 text-sm leading-relaxed">
-                I believe that a great coaching relationship is built on extreme context and understanding. Here are my raw answers to common inquiries guided by advanced training sciences.
-              </p>
-            </div>
-
-            <!-- Tab Buttons layout -->
-            <div class="flex flex-wrap lg:flex-col gap-2 pt-2">
-              <button onclick="filterFAQ('all')" id="btn-faq-all" class="px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center justify-between min-w-[200px] border border-zinc-700 bg-zinc-800 text-white">
-                <span>SHOW ALL SYSTEM COGNITION</span>
-                <span class="text-[9px] bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded text-zinc-500 font-bold">4</span>
-              </button>
-              <button onclick="filterFAQ('nutrition')" id="btn-faq-nutrition" class="px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border border-transparent text-zinc-400 hover:text-white">
-                <i data-lucide="coffee" class="h-3.5 w-3.5"></i>
-                <span>NUTRITION BIOENERGETICS</span>
-              </button>
-              <button onclick="filterFAQ('training')" id="btn-faq-training" class="px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border border-transparent text-zinc-400 hover:text-white">
-                <i data-lucide="weight" class="h-3.5 w-3.5"></i>
-                <span>BIOMECHANICAL TRAINING</span>
-              </button>
-              <button onclick="filterFAQ('coaching')" id="btn-faq-coaching" class="px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border border-transparent text-zinc-400 hover:text-white">
-                <i data-lucide="book-open" class="h-3.5 w-3.5"></i>
-                <span>COMMITTED COACHING</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Accordion lists (8 columns grid) -->
-          <div class="lg:col-span-8 space-y-4" id="faq-list-container">
-            <!-- Accordion cards insertion -->
-          </div>
-        </div>
-      </section>
-
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="border-t border-zinc-900 bg-zinc-950/80 py-12 px-4 sm:px-6 lg:px-8 mt-auto text-center space-y-6">
-      <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-        <div class="flex items-center gap-2">
-          <div class="h-8 w-8 bg-zinc-900 border border-zinc-850 rounded-lg flex items-center justify-center">
-            <i data-lucide="dumbbell" class="h-4 w-4 text-[#bfff00]"></i>
-          </div>
-          <span class="text-xs font-mono font-bold tracking-widest text-[#bfff00]">IB.COACH • BY ISHAN</span>
-        </div>
-        <p class="text-[11px] text-zinc-500 max-w-md md:text-right leading-normal font-medium">
-          Disclaimer: The information on this website and within Coach Ishan's programs is based on personal transformation experience and peer-reviewed physical wellness literature. It is not formal medical advice.
-        </p>
-      </div>
-      <div class="text-[10px] text-zinc-650 font-mono text-zinc-600 pt-4 border-t border-zinc-900">
-        © 2026 Ishan Fitness Coaching. All Rights Reserved. Master Your Human Architecture.
-      </div>
-    </footer>
-
-    <!-- 7. SLIDING COPYWRITER DRAWER HUB -->
-    <div id="drawer-backdrop" onclick="closeCopyHub()" class="fixed inset-0 bg-black/70 z-50 transition-opacity duration-300 pointer-events-none opacity-0"></div>
-    
-    <div id="copy-hub-drawer" class="fixed right-0 top-0 bottom-0 w-full sm:w-[540px] bg-zinc-950 border-l border-zinc-855 border-zinc-800 shadow-2xl z-55 z-50 p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out">
-      <div class="flex flex-col h-full">
-        <!-- Drawer Header -->
-        <div class="flex items-center justify-between border-b border-zinc-900 pb-4 mb-6">
-          <div class="flex items-center gap-2">
-            <i data-lucide="file-text" class="h-5 w-5 text-[#bfff00]"></i>
-            <div>
-              <h4 class="text-md font-extrabold text-white tracking-tight">Ishan's Copywriting Hub</h4>
-              <p class="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Single-Click Copy Paste assets</p>
-            </div>
-          </div>
-          <button onclick="closeCopyHub()" class="p-1.5 hover:bg-zinc-900 rounded-lg text-zinc-400 hover:text-white transition-all cursor-pointer">
-            <i data-lucide="x" class="h-5 w-5"></i>
-          </button>
-        </div>
-
-        <!-- Drawer Body -->
-        <div class="flex-grow overflow-y-auto space-y-6 pr-1 pb-10">
-          <p class="text-xs text-zinc-300 leading-relaxed">
-            Here are the ready-to-use copy blocks crafted by our marketing strategist. Click any <strong>"Copy to Clipboard"</strong> button to immediately copy the structured text for your website builder.
-          </p>
-
-          <!-- Copy Card 1: Hero -->
-          <div class="bg-zinc-900/60 border border-zinc-850 rounded-xl p-4 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">1. Hero Section Copy</span>
-              <button id="btn-copy-tag-hero" onclick="copyPlainBlock('hero', 'btn-copy-tag-hero')" class="px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-lg border bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750 cursor-pointer transition-all">
-                Copy block
-              </button>
-            </div>
-            <div class="text-[11px] font-mono text-zinc-400 bg-zinc-950 p-3 rounded-lg border border-zinc-900 max-h-36 overflow-y-auto space-y-1">
-              <p class="text-[#bfff00] font-bold">Accent label: 8 Years in the Trenches • Science-Backed Results</p>
-              <p class="text-white font-extrabold">Headline: YOUR PHYSIQUE IS A SCIENCE. STOP GUESSING.</p>
-              <p>Subheadline: Bulked. Shredded. Proven. I've spent 8 years mastering the training and nutrition methodologies that take human bodies to single-digit body fat. Now, I'm handing you the keys to your ultimate form.</p>
-            </div>
-          </div>
-
-          <!-- Copy Card 2: About me -->
-          <div class="bg-zinc-900/60 border border-zinc-850 rounded-xl p-4 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">2. About Section Copy</span>
-              <button id="btn-copy-tag-about" onclick="copyPlainBlock('about', 'btn-copy-tag-about')" class="px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-lg border bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750 cursor-pointer transition-all">
-                Copy block
-              </button>
-            </div>
-            <div class="text-[11px] font-mono text-zinc-400 bg-zinc-950 p-3 rounded-lg border border-zinc-900 max-h-36 overflow-y-auto space-y-2">
-              <p class="text-white font-extrabold">Intro: I don't sell 'miracle' powders, 30-day quick fixes, or generic influencer workouts. I build elite physiques using ironclad exercise mechanics and cutting-edge metabolic science.</p>
-              <p>Narrative 1: My journey started over eight years ago. Just like many of you, I spent my early years in the gym overwhelmed by contrasting advice, fake natural claims, and confusing research...</p>
-              <p>Narrative 2: So, I threw out the bodybuilding forum hype and dug into the clinical literature...</p>
-            </div>
-          </div>
-
-          <!-- Copy Card 3: Offerings -->
-          <div class="bg-zinc-900/60 border border-zinc-850 rounded-xl p-4 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">3. Services & Core Packages</span>
-              <button id="btn-copy-tag-services" onclick="copyPlainBlock('services', 'btn-copy-tag-services')" class="px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-lg border bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750 cursor-pointer transition-all">
-                Copy block
-              </button>
-            </div>
-            <div class="text-[11px] font-mono text-zinc-400 bg-zinc-950 p-3 rounded-lg border border-zinc-900 max-h-36 overflow-y-auto space-y-4">
-              <div>
-                <p class="text-[#bfff00] font-bold">Package 1: The Metabolic Fuel Blueprint</p>
-                <p>Features: Custom Macros, Flexible Dieting samples, Micronutrient options list, workout food protocols</p>
-              </div>
-              <hr class="border-zinc-900"/>
-              <div>
-                <p class="text-[#bfff00] font-bold">Package 2: The Hypertrophy Matrix System</p>
-                <p>Features: Training splits, targeted volume tracking, video lifts form analysis, joint recovery audit</p>
-              </div>
-              <hr class="border-zinc-900"/>
-              <div>
-                <p class="text-[#bfff00] font-bold">Package 3: The Single-Digit Shred Protocol</p>
-                <p>Features: Cyclical refeeds, leptin stabilization trackers, daily weight logs, mindset coaching audits</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Copy Card 4: FAQs -->
-          <div class="bg-zinc-900/60 border border-zinc-850 rounded-xl p-4 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">4. High-Level FAQs</span>
-              <button id="btn-copy-tag-faq" onclick="copyPlainBlock('faq', 'btn-copy-tag-faq')" class="px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-lg border bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750 cursor-pointer transition-all">
-                Copy block
-              </button>
-            </div>
-            <div class="text-[11px] font-mono text-zinc-400 bg-zinc-950 p-3 rounded-lg border border-zinc-900 max-h-36 overflow-y-auto space-y-2">
-              <p class="text-white font-bold">Q: How do you calculate my macros?</p>
-              <p>A: We establish your specific Total Daily Energy Expenditure (TDEE). I teach macro flexibility with no calorie adaptation restrictions...</p>
-              <p class="text-white font-bold">Q: How is Ishan's coaching different from a generic PDF?</p>
-              <p>A: A generic PDF is a dead document. My coaching includes video checks, active metabolic changes adjusted dynamically based on sleep audits...</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-
-    <!-- APPLICATION JS SCRIPT LOGIC -->
-    <script>
-      // 1. Data Store variables
-      let systemUnit = 'metric'; // metric | imperial
-      let selectedGender = 'male'; // male | female
-      let trackingGoal = 'cut'; // cut | recomp | bulk
-      let calculatedTargetCal = null;
-
-      // FAQs datasets
-      const FAQ_ITEMS = [
-        {
-          question: "How do you calculate my macros, and will I need to restrict entire food groups?",
-          answer: "Absolutely not. Restricting entire food groups is the quickest shortcut to psychological burnout. We establish your specific Total Daily Energy Expenditure (TDEE) and Lean Body Mass (LBM) through comprehensive client parsing. I will teach you a flexible dieting strategy (balancing macros and micros) that enables you to stay social, enjoy life, and hit your goals without food-guilt.",
-          category: "nutrition"
-        },
-        {
-          question: "I've been lifting for years but have hit a stubborn plateau. How will your training system help?",
-          answer: "Plateaus are usually a sign of unmanaged fatigue, insufficient mechanical tension, or a lack of progressive overload structure. We will audit your current training logs, analyze video footage of your lift execution, and adjust your set volumes and proximity to failure (RPE/RIR). We use undulating progression variables to break adaptational resistance and spark fresh muscle hypertrophy.",
-          category: "training"
-        },
-        {
-          question: "Is single-digit body fat sustainable, and is it what I should strive for?",
-          answer: "Getting to single-digit body fat is a rigorous, elite endeavor suited for physical milestones, photoshoots, or events. While spectacular, it requires extreme compliance. For long-term year-round comfort, energy, focus, and healthy hormone balances, most men thrive between 10-14% body fat. We will customize your level of leanness to support both your aesthetic aspirations and daily work-life vitality.",
-          category: "coaching"
-        },
-        {
-          question: "How is Ishan's coaching different from a generic PDF training guide?",
-          answer: "A generic PDF is a dead document. It cannot review your lifting form, adjust variables when you get sick, or explain the physiological reasons behind a macro shift. My coaching is an active, collaborative partnership. You get dynamic weekly program adjustments, video biomechanical feedback, stress/sleep tracking audits, and direct support to teach you the 'why' behind the results.",
-          category: "coaching"
-        }
-      ];
-
-      // Form Diagnosis content guidelines based on goals
-      const STRATEGY_MAP = {
-        'fat-loss': {
-          title: "Single-Digit Fat Shred Protocol Blueprint Selected",
-          badge: "High Thermic Efficiency & Recomp",
-          cues: [
-            "Targeting lipid reduction while guarding myofibrillar tissue via structural mechanical tension.",
-            "Cyclical refeeds planned at maintenance level to support circulating thyroid and leptin hormones.",
-            "Step count parameters programmed to safely increase NEAT without raising cortisol."
-          ]
-        },
-        'muscle': {
-          title: "Hypertrophy Matrix Blueprint Selected",
-          badge: "Hypertrophy & Progressive Volume",
-          cues: [
-            "Surplus margins planned specifically to maximize amino oxidation without packing visceral adipose tissue.",
-            "Training structures designed strictly in the 1-2 Reps-in-Reserve (RIR) relative intensity range.",
-            "Targeting exact glycogen-loading windows inside your systemic recovery boundaries."
-          ]
-        },
-        'recomp': {
-          title: "Body Recomposition Phase Blueprint Selected",
-          badge: "CYCLICAL MACRONUTRIENT PARTITION",
-          cues: [
-            "Simultaneous lipolysis and muscle synthesis using localized macro-timing overrides.",
-            "Focusing heavily on multi-joint compounds with progressive biomechanical tension variables.",
-            "Energy margins adjusted on heavy vs light training days."
-          ]
-        },
-        'meal-plan': {
-          title: "Metabolic Fuel Blueprint Selected",
-          badge: "MACRONUTRIENT ALLOCATION ONLY",
-          cues: [
-            "Bespoke macro partitioning targets structured completely around your food digestion patterns.",
-            "Strategic sodium, potassium, and hydration guidance preventing intra-cellular water holding.",
-            "Flexible combinations matching work stress parameters and eating schedules."
-          ]
-        }
-      };
-
-      // Direct Copy Data values for copywriter hub copy
-      const RAWS_BLOCKS = {
-        hero: `HERO SECTION COPY\n=================\nHeadline: YOUR PHYSIQUE IS A SCIENCE. STOP GUESSING.\nSubheadline: Bulked. Shredded. Proven. I've spent 8 years mastering the training and nutrition methodologies that take human bodies to single-digit body fat. Now, I'm handing you the keys to your ultimate form.\nAccent Tagline: 8 Years in the Trenches • Science-Backed Results\nCTA Action: Claim Your Blueprint`,
-        about: `ABOUT ME SECTION COPY\n=================\nMeet Ishan - Founder, Head Coach & Strength Strategist\nStatement: I don't sell 'miracle' powders, 30-day quick fixes, or generic influencer workouts. I build elite physiques using ironclad exercise mechanics and cutting-edge metabolic science.\nNarrative Description of Coach's 8 years credentials, bulking/cutting insights to single-digit fat, and expert nutrition mechanics.`,
-        services: `SERVICES / CORE PROTOCOLS\n=================\n1. The Metabolic Fuel Blueprint (Duration: Monthly / Recurring) - Custom macro targets computed dynamically, flexible dieting guidelines, digestible micro-optimizations, weekly checks with Ishan.\n2. The Hypertrophy Matrix System (Duration: 12-Week Phase) - Custom training splits, biomechanical lifting analysis, injury mitigation, deload scheduling.\n3. The Single-Digit Shred Protocol (Duration: 16-Week Phase) - Advanced leanness roadmap, cyclical refeeds, steps and weights tracker, WhatsApp updates directly with Ishan.`,
-        faq: `HIGH-SCIENCE FAQ ASSETS\n=================\n- Calculus & Restrictiveness: We set total calories and weight goals. Food choices are flexible so you prevent emotional burnout.\n- Hypertrophy Plateaus: Audited using fatigue variables and lift mechanics setups to bypass adaptive plateaus.\n- Sustainability of single digits: Best for target photoshoots. Daily life comfort thrives around 10-14% fat levels.\n- Ishan's active coaching difference: Generes activeWeekly modifications, lifts form analysis, fatigue checks, direct mentorship.`
-      };
-
-      // 2. Initial Setup Loading
-      document.addEventListener('DOMContentLoaded', () => {
-        // Initialize FAQ rendering
-        renderFAQAccordion('all');
-        
-        // Initialize dynamic lucide icons
-        if (window.lucide) {
-          lucide.createIcons();
-        }
-      });
-
-      // 3. Dynamic Unit & Parameter toggling for Calibrator
-      function setSystemUnit(unit) {
-        systemUnit = unit;
-        const wLbl = document.getElementById('lbl-weight');
-        const hLbl = document.getElementById('lbl-height');
-        const wIn = document.getElementById('input-weight');
-        const hIn = document.getElementById('input-height');
-
-        if (unit === 'metric') {
-          wLbl.textContent = 'Weight (kg)';
-          hLbl.textContent = 'Height (cm)';
-          wIn.value = '80';
-          hIn.value = '180';
-          
-          document.getElementById('btn-metric').className = 'flex-1 text-xs py-2 rounded-lg font-medium transition-all bg-zinc-800 text-lime-400 font-mono';
-          document.getElementById('btn-imperial').className = 'flex-1 text-xs py-2 rounded-lg font-medium transition-all text-zinc-400 hover:text-white';
-        } else {
-          wLbl.textContent = 'Weight (lbs)';
-          hLbl.textContent = 'Height (in)';
-          wIn.value = '175';
-          hIn.value = '70';
-
-          document.getElementById('btn-metric').className = 'flex-1 text-xs py-2 rounded-lg font-medium transition-all text-zinc-400 hover:text-white';
-          document.getElementById('btn-imperial').className = 'flex-1 text-xs py-2 rounded-lg font-medium transition-all bg-zinc-800 text-lime-400 font-mono';
-        }
-        resetCalculatedResult();
-      }
-
-      function setGenderVal(gender) {
-        selectedGender = gender;
-        if (gender === 'male') {
-          document.getElementById('btn-male').className = 'flex-1 text-xs py-2 rounded-lg font-medium transition-all bg-zinc-800 text-white';
-          document.getElementById('btn-female').className = 'flex-1 text-xs py-2 rounded-lg font-medium transition-all text-zinc-400 hover:text-white';
-        } else {
-          document.getElementById('btn-male').className = 'flex-1 text-xs py-2 rounded-lg font-medium transition-all text-zinc-400 hover:text-white';
-          document.getElementById('btn-female').className = 'flex-1 text-xs py-2 rounded-lg font-medium transition-all bg-zinc-800 text-white';
-        }
-        resetCalculatedResult();
-      }
-
-      function setPhyGoal(goal) {
-        trackingGoal = goal;
-        
-        const goals = ['cut', 'recomp', 'bulk'];
-        goals.forEach(g => {
-          const btn = document.getElementById(`btn-goal-${g}`);
-          if (g === goal) {
-            if (g === 'cut') {
-              btn.className = 'py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase bg-orange-950/40 border border-orange-850/50 text-orange-400';
-            } else if (g === 'recomp') {
-              btn.className = 'py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase bg-zinc-800 border border-zinc-700 text-white';
-            } else {
-              btn.className = 'py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase bg-lime-950/40 border border-lime-800/50 text-lime-400';
-            }
-          } else {
-            btn.className = 'py-2 px-1 rounded-lg text-xs font-semibold tracking-tight transition-all uppercase text-zinc-400 hover:text-white';
-          }
-        });
-        resetCalculatedResult();
-      }
-
-      function resetCalculatedResult() {
-        document.getElementById('calc-computed-view').classList.add('hidden');
-        document.getElementById('calc-empty-slate').classList.remove('hidden');
-        calculatedTargetCal = null;
-      }
-
-      // 4. Macro Calibrator Engine
-      function triggerCalibrator() {
-        const btnText = document.getElementById('cal-btn-text');
-        btnText.textContent = "CALIBRATING PHYSIOLOGY...";
-        
-        setTimeout(() => {
-          const weight = parseFloat(document.getElementById('input-weight').value);
-          const height = parseFloat(document.getElementById('input-height').value);
-          const age = parseInt(document.getElementById('input-age').value);
-          const activity = parseFloat(document.getElementById('select-activity').value);
-
-          if (isNaN(weight) || isNaN(height) || isNaN(age)) {
-            alert('Please enter valid numeric parameters to proceed.');
-            btnText.textContent = "CALCULATE MY BLUEPRINT";
-            return;
-          }
-
-          // Convert to Metric internally
-          let weightKg = weight;
-          let heightCm = height;
-          if (systemUnit === 'imperial') {
-            weightKg = weight * 0.453592237;
-            heightCm = height * 2.54;
-          }
-
-          // Mifflin-St Jeor formula
-          let bmr = 10 * weightKg + 6.25 * heightCm - 5 * age;
-          if (selectedGender === 'male') {
-            bmr += 5;
-          } else {
-            bmr -= 161;
-          }
-
-          // Total Daily Energy Expenditure (TDEE)
-          const tdee = Math.round(bmr * activity);
-          let targetCalories = tdee;
-
-          if (trackingGoal === 'cut') {
-            targetCalories = tdee - 500;
-          } else if (trackingGoal === 'bulk') {
-            targetCalories = tdee + 350;
-          } else {
-            targetCalories = tdee - 100; // recomposition slight deficit
-          }
-
-          // Macronutrient allocations based on high active protein demands (2.2g per kg)
-          const proteinGrams = Math.round(weightKg * 2.2);
-          const proteinCals = proteinGrams * 4;
-
-          // 22% of targets from healthy fats
-          const fatCals = targetCalories * 0.22;
-          const fatGrams = Math.round(fatCals / 9);
-
-          // Rest comes from carbohydrate energy glycogen
-          const remainingCals = targetCalories - (proteinCals + fatCals);
-          const carbGrams = Math.round(Math.max(remainingCals, 0) / 4);
-
-          calculatedTargetCal = targetCalories;
-
-          // Apply to calculations UI fields
-          document.getElementById('lbl-tdee-out').textContent = tdee;
-          document.getElementById('lbl-target-out').textContent = targetCalories;
-          document.getElementById('lbl-prot-out').textContent = proteinGrams;
-          document.getElementById('lbl-carb-out').textContent = carbGrams;
-          document.getElementById('lbl-fat-out').textContent = fatGrams;
-
-          document.getElementById('lbl-prot-cal-out').textContent = `(${proteinCals} kcal)`;
-          document.getElementById('lbl-carb-cal-out').textContent = `(${carbGrams * 4} kcal)`;
-          document.getElementById('lbl-fat-cal-out').textContent = `(${Math.round(fatCals)} kcal)`;
-
-          const goalPill = document.getElementById('badge-calculated-goal');
-          goalPill.textContent = `${trackingGoal} protocol`;
-          
-          if (trackingGoal === 'cut') {
-            goalPill.className = "text-[10px] font-mono font-medium text-orange-400 bg-orange-950/20 border border-orange-850 px-2.5 py-1 rounded-full uppercase";
-          } else if (trackingGoal === 'bulk') {
-            goalPill.className = "text-[10px] font-mono font-medium text-lime-400 bg-lime-950/20 border border-lime-850 px-2.5 py-1 rounded-full uppercase";
-          } else {
-            goalPill.className = "text-[10px] font-mono font-medium text-white bg-zinc-800 border border-zinc-700 px-2.5 py-1 rounded-full uppercase";
-          }
-
-          // Trigger view state swaps
-          document.getElementById('calc-empty-slate').classList.add('hidden');
-          document.getElementById('calc-computed-view').classList.remove('hidden');
-
-          btnText.textContent = "CALCULATE MY BLUEPRINT";
-          if (window.lucide) {
-            lucide.createIcons();
-          }
-        }, 500);
-      }
-
-      // 5. Package and Macro cross fillers to form
-      function autoFillCalAndGoal() {
-        if (!calculatedTargetCal) return;
-        
-        // Select matching form goal parameter
-        const goalSelector = document.getElementById('form-goal');
-        if (trackingGoal === 'bulk') {
-          goalSelector.value = 'muscle';
-        } else if (trackingGoal === 'cut') {
-          goalSelector.value = 'fat-loss';
-        } else {
-          goalSelector.value = 'recomp';
-        }
-
-        // Show pre-loaded calories label
-        const preloadBox = document.getElementById('box-preloaded-calories');
-        const calLabel = document.getElementById('lbl-form-calories');
-        
-        calLabel.textContent = `${calculatedTargetCal} kcal/day`;
-        preloadBox.classList.remove('hidden');
-
-        // Smooth scroll to inquiry form
-        document.getElementById('inquiry-section').scrollIntoView({ behavior: 'smooth' });
-        updateInquiryFormGoalDiagnosis();
-      }
-
-      function selectGoal(goal) {
-        const goalSelector = document.getElementById('form-goal');
-        goalSelector.value = goal;
-        
-        document.getElementById('inquiry-section').scrollIntoView({ behavior: 'smooth' });
-        updateInquiryFormGoalDiagnosis();
-      }
-
-      // 6. Dynamic Form Diagnosis display logic
-      function updateInquiryFormGoalDiagnosis() {
-        // Just triggers live analysis changes if submit was completed
-      }
-
-      // 7. Booking / Form application submissions
-      function submitCoachingRequest(event) {
-        event.preventDefault();
-        
-        const submitBtnLabel = document.getElementById('form-btn-label');
-        submitBtnLabel.textContent = "TRANSMITTING TO ISHAN'S CORPS...";
-
-        setTimeout(() => {
-          const clientName = document.getElementById('form-name').value;
-          const chosenGoal = document.getElementById('form-goal').value;
-
-          // Hydrate success outputs
-          document.getElementById('success-client-name').textContent = clientName;
-          
-          const strategy = STRATEGY_MAP[chosenGoal] || STRATEGY_MAP['fat-loss'];
-          document.getElementById('success-diagnosis-title').textContent = strategy.title;
-          document.getElementById('success-badge-title').textContent = strategy.badge;
-
-          // Render dynamic list indicators
-          const ul = document.getElementById('success-diagnosis-list');
-          ul.innerHTML = '';
-          strategy.cues.forEach(cue => {
-            const li = document.createElement('li');
-            li.className = "flex items-start gap-2.5 text-xs text-zinc-350 bg-zinc-950 p-2.5 rounded-lg border border-zinc-900";
-            li.innerHTML = `<span class="h-1.5 w-1.5 rounded-full bg-[#bfff00] shrink-0 mt-2"></span><span>${cue}</span>`;
-            ul.appendChild(li);
-          });
-
-          // Toggle form grids view states
-          document.getElementById('form-unsubmitted-container').classList.add('hidden');
-          document.getElementById('form-success-container').classList.remove('hidden');
-          
-          document.getElementById('inquiry-section').scrollIntoView({ behavior: 'smooth' });
-          if (window.lucide) {
-            lucide.createIcons();
-          }
-        }, 800);
-      }
-
-      function resetInquiryForm() {
-        document.getElementById('coaching-inquiry-form').reset();
-        document.getElementById('box-preloaded-calories').classList.add('hidden');
-        document.getElementById('form-unsubmitted-container').classList.remove('hidden');
-        document.getElementById('form-success-container').classList.add('hidden');
-        if (window.lucide) {
-          lucide.createIcons();
-        }
-      }
-
-      // 8. FAQ Render & Accordions
-      let currentFAQCategory = 'all';
-      let faqOpenedIndex = 0;
-
-      function renderFAQAccordion(category) {
-        currentFAQCategory = category;
-        const container = document.getElementById('faq-list-container');
-        container.innerHTML = '';
-
-        // Filter FAQs
-        const list = FAQ_ITEMS.filter(item => category === 'all' || item.category === category);
-
-        // Update active tab buttons
-        const categories = ['all', 'nutrition', 'training', 'coaching'];
-        categories.forEach(cat => {
-          const btn = document.getElementById(`btn-faq-${cat}`);
-          if (cat === category) {
-            if (cat === 'all') {
-              btn.className = "px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center justify-between min-w-[200px] border border-zinc-700 bg-zinc-800 text-white";
-            } else if (cat === 'nutrition') {
-              btn.className = "px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border border-orange-950/40 bg-orange-950/20 text-orange-400";
-            } else if (cat === 'training') {
-              btn.className = "px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border border-lime-950/40 bg-lime-950/20 text-[#bfff00]";
-            } else {
-              btn.className = "px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border border-blue-950/30 bg-blue-950/20 text-blue-400";
-            }
-          } else {
-            btn.className = "px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border border-transparent text-zinc-400 hover:text-white";
-          }
-        });
-
-        // Insert accordion elements
-        list.forEach((item, idx) => {
-          const isOpen = faqOpenedIndex === idx;
-          const displayClass = isOpen ? 'block' : 'hidden';
-          const rotateClass = isOpen ? 'rotate-180 text-[#bfff00]' : '';
-          
-          let subBadge = 'Elite Coaching';
-          let categoryIcon = 'book-open';
-          if (item.category === 'nutrition') {
-            subBadge = 'Nutrition Science';
-            categoryIcon = 'coffee';
-          } else if (item.category === 'training') {
-            subBadge = 'Biomechanics';
-            categoryIcon = 'weight';
-          }
-
-          const card = document.createElement('div');
-          card.className = `border rounded-2xl transition-all duration-305 bg-zinc-925/80 border-zinc-850 hover:bg-zinc-900/40 hover:border-zinc-800 ${isOpen ? 'bg-zinc-900/40 border-zinc-700' : ''}`;
-          card.innerHTML = `
-            <button onclick="toggleFAQCard(${idx})" class="w-full px-6 py-5 flex items-center justify-between text-left cursor-pointer gap-4 group">
-              <div class="flex items-start gap-3.5">
-                <div class="p-1.5 bg-zinc-900 rounded-lg group-hover:bg-zinc-850 transition-all stroke-zinc-405 border border-zinc-800 mt-0.5 shrink-0 flex items-center justify-center">
-                  <i data-lucide="${categoryIcon}" class="h-4 w-4"></i>
-                </div>
-                <div>
-                  <span class="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block mb-0.5">${subBadge}</span>
-                  <h4 class="text-sm md:text-md font-bold text-white tracking-tight leading-tight group-hover:text-[#bfff00] transition-all">
-                    ${item.question}
-                  </h4>
-                </div>
-              </div>
-              <i data-lucide="chevron-down" id="faq-chevron-${idx}" class="h-5 w-5 text-zinc-500 transition-all shrink-0 ${rotateClass}"></i>
-            </button>
-            <div id="faq-answer-block-${idx}" class="${displayClass} overflow-hidden">
-              <div class="px-6 pb-6 pt-1 text-xs md:text-sm text-zinc-300 leading-relaxed pl-[4.25rem] border-t border-zinc-850/60 font-medium">
-                ${item.answer}
-              </div>
-            </div>
-          `;
-          container.appendChild(card);
-        });
-
-        if (window.lucide) {
-          lucide.createIcons();
-        }
-      }
-
-      function toggleFAQCard(idx) {
-        if (faqOpenedIndex === idx) {
-          faqOpenedIndex = null;
-        } else {
-          faqOpenedIndex = idx;
-        }
-        renderFAQAccordion(currentFAQCategory);
-      }
-
-      function filterFAQ(category) {
-        faqOpenedIndex = 0;
-        renderFAQAccordion(category);
-      }
-
-      // 9. Floating Copy Hub drawer slider triggers
-      function openCopyHub() {
-        document.getElementById('drawer-backdrop').classList.replace('pointer-events-none', 'pointer-events-auto');
-        document.getElementById('drawer-backdrop').classList.replace('opacity-0', 'opacity-100');
-        document.getElementById('copy-hub-drawer').classList.replace('translate-x-full', 'translate-x-0');
-      }
-
-      function closeCopyHub() {
-        document.getElementById('drawer-backdrop').classList.replace('pointer-events-auto', 'pointer-events-none');
-        document.getElementById('drawer-backdrop').classList.replace('opacity-100', 'opacity-0');
-        document.getElementById('copy-hub-drawer').classList.replace('translate-x-0', 'translate-x-full');
-      }
-
-      // Single action copy clipboard with instant feedbacks
-      function copyPlainBlock(key, btnId = null) {
-        const textToCopy = RAWS_BLOCKS[key] || "No content found";
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          if (btnId) {
-            const btn = document.getElementById(btnId);
-            const orig = btn.textContent;
-            btn.textContent = "COPIED!";
-            btn.className = "px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-lg border bg-lime-950/40 text-[#bfff00] border-lime-800/40";
+        {/* 6. FAQ SECTION */}
+        <section id="faq-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             
-            setTimeout(() => {
-              btn.textContent = "COPY BLOCK";
-              btn.className = "px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-lg border bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750 cursor-pointer";
-            }, 1800);
-          } else {
-            // Toast notification or basic trigger highlight
-            alert('Physique Copy blocks successfully copied to clipboard!');
-          }
-        });
-      }
-    </script>
-  </body>
-</html>
+            {/* Sticky controls filters */}
+            <div className="lg:col-span-4 space-y-5 lg:sticky lg:top-24">
+              <div className="space-y-3">
+                <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold block">
+                  Cognitive Interlock
+                </span>
+                <h2 className="text-3xl font-extrabold text-white tracking-tight">QUESTIONS & INTELLECT</h2>
+                <p className="text-zinc-400 text-sm leading-relaxed">
+                  I believe that a great coaching relationship is built on extreme context and understanding. Here are my raw answers to common inquiries guided by advanced training sciences.
+                </p>
+              </div>
+
+              {/* Accordion control tabs */}
+              <div className="flex flex-wrap lg:flex-col gap-2 pt-2">
+                <button 
+                  onClick={() => { setFaqCategory('all'); setFaqOpenIndex(0); }} 
+                  className={`px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center justify-between min-w-[200px] border transition-all ${
+                    faqCategory === 'all' 
+                      ? 'border-zinc-700 bg-zinc-800 text-white' 
+                      : 'border-transparent text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <span>SHOW ALL INTELLECT</span>
+                  <span className="text-[9px] bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded text-zinc-400 font-bold">4</span>
+                </button>
+                <button 
+                  onClick={() => { setFaqCategory('nutrition'); setFaqOpenIndex(0); }} 
+                  className={`px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border transition-all ${
+                    faqCategory === 'nutrition' 
+                      ? 'border-orange-950/40 bg-orange-950/20 text-orange-400 font-bold' 
+                      : 'border-transparent text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <Coffee className="h-3.5 w-3.5" />
+                  <span>NUTRITION BIOENERGETICS</span>
+                </button>
+                <button 
+                  onClick={() => { setFaqCategory('training'); setFaqOpenIndex(0); }} 
+                  className={`px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border transition-all ${
+                    faqCategory === 'training' 
+                      ? 'border-lime-950/40 bg-lime-950/20 text-[#bfff00] font-bold' 
+                      : 'border-transparent text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <Dumbbell className="h-3.5 w-3.5" />
+                  <span>BIOMECHANICAL TRAINING</span>
+                </button>
+                <button 
+                  onClick={() => { setFaqCategory('coaching'); setFaqOpenIndex(0); }} 
+                  className={`px-4 py-2.5 rounded-xl text-xs font-semibold font-mono tracking-tight text-left cursor-pointer flex items-center gap-2 border transition-all ${
+                    faqCategory === 'coaching' 
+                      ? 'border-blue-950/30 bg-blue-950/20 text-blue-400 font-bold' 
+                      : 'border-transparent text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <Award className="h-3.5 w-3.5" />
+                  <span>COMMITTED COACHING</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Accordion lists inside the layout */}
+            <div className="lg:col-span-8 space-y-4">
+              {FAQ_ITEMS.filter(item => faqCategory === 'all' || item.category === faqCategory).map((item, idx) => {
+                const isOpen = faqOpenIndex === idx;
+                
+                let subBadge = 'Elite Coaching';
+                if (item.category === 'nutrition') subBadge = 'Nutrition Science';
+                if (item.category === 'training') subBadge = 'Biomechanics';
+
+                return (
+                  <div 
+                    key={idx} 
+                    className={`border rounded-2xl transition-all duration-300 bg-zinc-925/80 border-zinc-855 ${
+                      isOpen ? 'bg-zinc-900 border-zinc-700' : 'border-zinc-900 hover:border-zinc-800'
+                    }`}
+                  >
+                    <button 
+                      onClick={() => setFaqOpenIndex(isOpen ? null : idx)}
+                      className="w-full px-6 py-5 flex items-center justify-between text-left cursor-pointer gap-4 group"
+                    >
+                      <div className="flex items-start gap-3.5">
+                        <div className="p-1.5 bg-zinc-900 rounded-lg group-hover:bg-zinc-850 transition-all border border-zinc-800 mt-0.5 shrink-0 flex items-center justify-center">
+                          {item.category === 'nutrition' && <Coffee className="h-4 w-4" />}
+                          {item.category === 'training' && <Dumbbell className="h-4 w-4" />}
+                          {item.category === 'coaching' && <Award className="h-4 w-4" />}
+                        </div>
+                        <div>
+                          <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest block mb-0.5">{subBadge}</span>
+                          <h4 className="text-sm md:text-md font-bold text-white tracking-tight leading-tight group-hover:text-[#bfff00] transition-colors duration-200">
+                            {item.question}
+                          </h4>
+                        </div>
+                      </div>
+                      <ChevronDown className={`h-5 w-5 text-zinc-500 transition-transform ${isOpen ? 'rotate-180 text-[#bfff00]' : ''}`} />
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-6 pb-6 pt-1 text-xs md:text-sm text-zinc-350 leading-relaxed pl-[4.25rem] border-t border-zinc-850/65 font-medium text-zinc-300">
+                            {item.answer}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+
+      {/* FOOTER */}
+      <footer className="border-t border-zinc-900 bg-zinc-950/80 py-12 px-4 sm:px-6 lg:px-8 mt-auto text-center space-y-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 bg-zinc-900 border border-zinc-850 rounded-lg flex items-center justify-center">
+              <Dumbbell className="h-4 w-4 text-[#bfff00]" />
+            </div>
+            <span className="text-xs font-mono font-bold tracking-widest text-[#bfff00]">IB.COACH • BY ISHAN</span>
+          </div>
+          <p className="text-[11px] text-zinc-500 max-w-md md:text-right leading-normal font-medium">
+            Disclaimer: The information on this website and within Coach Ishan's programs is based on personal transformation experience and peer-reviewed physical wellness literature. It is not formal medical advice.
+          </p>
+        </div>
+        <div className="text-[10px] text-zinc-650 font-mono text-zinc-600 pt-4 border-t border-zinc-900">
+          © {new Date().getFullYear()} Ishan Fitness Coaching. All Rights Reserved. Master Your Human Architecture.
+        </div>
+      </footer>
+
+    </div>
+  );
+}
