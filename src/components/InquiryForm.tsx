@@ -7,10 +7,9 @@ interface InquiryFormProps {
   preloadedCalories?: number;
 }
 
-export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalories }: InquiryFormProps) {
+export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -19,17 +18,14 @@ export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalorie
     setIsSubmitting(true);
 
     try {
-      // Writes straight to the 'leads' table you set up in Supabase
+      // Matches your exact 3 active columns in your Supabase table schema
       const { error } = await supabase
         .from('leads')
         .insert([
           {
             name: name,
             email: email,
-            whatsapp: whatsapp,
-            selected_goal: initialGoal,
-            calculated_calories: preloadedCalories || null,
-            submitted_at: new Date().toISOString()
+            selected_goal: initialGoal
           }
         ]);
 
@@ -38,7 +34,6 @@ export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalorie
       setIsSuccess(true);
       setName('');
       setEmail('');
-      setWhatsapp('');
     } catch (err) {
       console.error('Submission Error:', err);
       alert('Application failed to transmit. Please check your network connection and try again.');
@@ -55,7 +50,7 @@ export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalorie
         </div>
         <h3 className="text-xl font-extrabold text-white uppercase tracking-tight">Application Transmitted</h3>
         <p className="text-xs text-zinc-400 leading-relaxed">
-          Your biometric targets have been logged to the cloud. Ishan will review your physique requirements and reach out via WhatsApp/Email shortly.
+          Your blueprint parameters have been logged to the cloud. Ishan will review your physique requirements and reach out shortly.
         </p>
         <button 
           onClick={() => setIsSuccess(false)}
@@ -74,7 +69,6 @@ export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalorie
         <h2 className="text-2xl md:text-3xl font-extrabold text-white uppercase tracking-tight">Apply For Blueprint Allocation</h2>
         <p className="text-xs text-zinc-500 max-w-sm mx-auto">
           Active Goal Setup: <span className="text-white font-mono uppercase font-semibold">{initialGoal.replace('-', ' ')}</span>
-          {preloadedCalories ? ` (${preloadedCalories} kcal preloaded)` : ''}
         </p>
       </div>
 
@@ -99,18 +93,6 @@ export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalorie
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="johndoe@email.com"
-            className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-lime-400 font-medium transition-colors"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block font-bold">WhatsApp Number (With Country Code)</label>
-          <input
-            type="tel"
-            required
-            value={whatsapp}
-            onChange={(e) => setWhatsapp(e.target.value)}
-            placeholder="+1 555 123 4567"
             className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-lime-400 font-medium transition-colors"
           />
         </div>
