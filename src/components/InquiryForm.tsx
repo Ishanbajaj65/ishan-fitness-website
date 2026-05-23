@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../supabaseClient';
 import { Send, CheckCircle, ChevronDown } from 'lucide-react';
 
 interface InquiryFormProps {
   prefilledGoal?: string;
-  prefilledCalories?: number;
+  prefilledBmi?: string;
 }
 
 const GOAL_OPTIONS = [
@@ -21,16 +21,29 @@ const FITNESS_LEVELS = [
   { value: 'advanced', label: 'Advanced (3+ years consistent)' },
 ];
 
-export default function InquiryForm({ prefilledGoal, prefilledCalories }: InquiryFormProps) {
+export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     goal: prefilledGoal || 'fat-loss',
     fitnessLevel: 'intermediate',
-    targetCalories: prefilledCalories ? String(prefilledCalories) : '',
+    targetCalories: '',
+    bmi: prefilledBmi || '',
     message: '',
   });
+
+  useEffect(() => {
+    if (prefilledGoal) {
+      setFormData((prev) => ({ ...prev, goal: prefilledGoal }));
+    }
+  }, [prefilledGoal]);
+
+  useEffect(() => {
+    if (prefilledBmi) {
+      setFormData((prev) => ({ ...prev, bmi: prefilledBmi }));
+    }
+  }, [prefilledBmi]);
 
   const [submitting, setSubmitting] = useState(false);
   const [succeeded, setSucceeded] = useState(false);
@@ -49,6 +62,10 @@ export default function InquiryForm({ prefilledGoal, prefilledCalories }: Inquir
     setSubmitting(true);
     setServerError(null);
 
+    const finalMessage = formData.bmi 
+      ? `[Auto-Calculated BMI: ${formData.bmi}] ${formData.message}`.trim()
+      : formData.message;
+
     try {
       const { error } = await supabase.from('inquiries').insert([
         {
@@ -58,7 +75,7 @@ export default function InquiryForm({ prefilledGoal, prefilledCalories }: Inquir
           goal: formData.goal,
           fitness_level: formData.fitnessLevel,
           target_calories: formData.targetCalories ? parseInt(formData.targetCalories) : null,
-          message: formData.message || null,
+          message: finalMessage || null,
         },
       ]);
 
@@ -183,16 +200,16 @@ export default function InquiryForm({ prefilledGoal, prefilledCalories }: Inquir
                 </div>
                 <div>
                   <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">
-                    Calculated Calories
-                    <span className="ml-1.5 text-[9px] text-zinc-500 normal-case font-sans">(auto-filled from calculator)</span>
+                    Calculated BMI
+                    <span className="ml-1.5 text-[9px] text-[#bfff00] normal-case font-sans">(auto-filled from BMI calculator)</span>
                   </label>
                   <input
-                    type="number"
-                    name="targetCalories"
-                    value={formData.targetCalories}
-                    onChange={handleChange}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors font-mono"
-                    placeholder="e.g. 2350 kcal"
+                    type="text"
+                    name="bmi"
+                    readOnly
+                    value={formData.bmi}
+                    className="w-full bg-zinc-900/60 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500/50 transition-colors font-mono cursor-not-allowed"
+                    placeholder="e.g. 22.4"
                   />
                 </div>
               </div>
@@ -270,10 +287,10 @@ export default function InquiryForm({ prefilledGoal, prefilledCalories }: Inquir
                   {GOAL_OPTIONS.find(g => g.value === formData.goal)?.label}
                 </span>
               </div>
-              {formData.targetCalories && (
+              {formData.bmi && (
                 <div className="flex justify-between text-xs">
-                  <span className="text-zinc-500">Target Calories</span>
-                  <span className="text-white font-mono font-semibold">{formData.targetCalories} kcal/day</span>
+                  <span className="text-zinc-500">Calculated BMI</span>
+                  <span className="text-[#bfff00] font-mono font-semibold">{formData.bmi}</span>
                 </div>
               )}
             </div>

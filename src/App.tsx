@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Instagram, MessageCircle, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import MacroCalculator from './components/MacroCalculator';
+import BmiCalculator from './components/BmiCalculator';
 import InquiryForm from './components/InquiryForm';
 import ProgramsSection from './components/ProgramsSection';
 import FAQSection from './components/FAQSection';
@@ -11,7 +11,7 @@ import { HERO_COPY, ABOUT_COPY } from './fitnessData';
 
 export default function App() {
   const [prefilledGoal, setPrefilledGoal] = useState<string | undefined>(undefined);
-  const [prefilledCalories, setPrefilledCalories] = useState<number | undefined>(undefined);
+  const [prefilledBmi, setPrefilledBmi] = useState<string | undefined>(undefined);
   const [scrolled, setScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
@@ -27,9 +27,8 @@ export default function App() {
     document.getElementById('intake-portal')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleApplyMacros = (goal: 'muscle' | 'fat-loss' | 'meal-plan' | 'recomp', cal: number) => {
-    setPrefilledGoal(goal);
-    setPrefilledCalories(cal);
+  const handleApplyBmi = (bmi: string) => {
+    setPrefilledBmi(bmi);
     setTimeout(() => {
       document.getElementById('intake-portal')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -47,7 +46,7 @@ export default function App() {
     { href: '#testimonials-section', label: 'Results' },
     { href: '#blueprints', label: 'Blueprints' },
     { href: '#pricing-section', label: 'Pricing' },
-    { href: '#calibrator', label: 'Calibrator' },
+    { href: '#calibrator', label: 'BMI Calibrator' },
     { href: '#faq-section', label: 'FAQs' },
   ];
 
@@ -280,14 +279,14 @@ export default function App() {
           <PricingSection onApply={handleSelectPackage} />
         </section>
 
-        {/* ── 6. CALIBRATOR / MACRO CALCULATOR SECTION ── */}
+        {/* ── 6. CALIBRATOR / BMI CALCULATOR SECTION ── */}
         <section className="px-margin-mobile md:px-margin-desktop py-24 max-w-container-max mx-auto border-t border-white/5" id="calibrator">
-          <MacroCalculator onApplyMacros={handleApplyMacros} />
+          <BmiCalculator onApplyBmi={handleApplyBmi} />
         </section>
 
         {/* ── 7. INQUIRY PORTAL ── */}
         <section id="intake-portal" className="px-margin-mobile md:px-margin-desktop py-24 max-w-4xl mx-auto">
-          <InquiryForm prefilledGoal={prefilledGoal} prefilledCalories={prefilledCalories} />
+          <InquiryForm prefilledGoal={prefilledGoal} prefilledBmi={prefilledBmi} />
         </section>
 
         {/* ── 8. FAQS SECTION ── */}
