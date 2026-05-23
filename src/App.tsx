@@ -19,224 +19,207 @@ export default function App() {
   const faqs = [
     {
       question: "Do I need to spend hours cooking and meal prepping?",
-      answer: "Absolutely not. We optimize your parameters around your active lifestyle. I will teach you exactly how to navigate restaurant menus, corporate cafeterias, client dinners, and quick 10-minute high-protein assembly options so your career never suffers."
+      answer: "Not at all. We adapt everything around your busy lifestyle. I will teach you how to easily navigate restaurant menus, corporate cafeterias, client dinners, and quick 10-minute options so your routine effortlessly fits into your career."
     },
     {
       question: "What happens when I travel for business or hit a busy week?",
-      answer: "This is exactly where my 8 years of corporate experience kicks in. We don't discard the plan; we implement 'Travel & Crisis Frameworks'. I configure optimized, high-yield hotel gym workflows and travel-friendly nutritional rules that lock in your progress while you focus on your business targets."
+      answer: "Having spent years balancing corporate demands, I understand how schedules fluctuate. Instead of throwing away your progress, we use flexible travel guidelines and simple hotel gym routines that keep you on track without adding stress."
     },
     {
-      question: "I am completely drained after a 9-hour shift. How will I find the energy to train?",
-      answer: "Most commercial plans cause burnout because they add massive stress to an already exhausted body. Our training blocks manage your central nervous system fatigue indices. They are structured to optimize cellular energy, improve sleep quality, and release cognitive stress, leaving you more focused for work the next morning."
+      question: "I am completely drained after a long shift. How will I find energy to train?",
+      answer: "Most fitness plans cause burnout because they demand too much from an exhausted body. Our routines are focused on restorative health—designed to increase daily energy, improve sleep quality, and clear mental stress so you feel refreshed the next morning."
     },
     {
       question: "How is this different from hiring a standard personal trainer?",
-      answer: "Standard trainers give you an hour of counting reps and a generic PDF meal sheet. This is a comprehensive high-performance infrastructure. We optimize your lifestyle data, stress parameters, metrics, and mindset via daily communication loops, creating a completely bulletproof path to results built specifically for busy desk professionals."
+      answer: "Instead of just counting reps or sending generic PDFs, we build a sustainable, personal routine around your stress levels, work commitments, and long-term goals through consistent, supportive guidance."
     }
   ];
 
   return (
-    <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-[#bfff00] selection:text-black">
+    // Changed to slate-950 for a softer, warmer dark mode. Updated text to sentence case.
+    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
       
       {/* HEADER NAVBAR */}
-      <nav className="w-full border-b border-zinc-900 bg-black/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+      <nav className="w-full border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-[#bfff00]" />
-            <span className="text-xs font-mono font-bold tracking-widest uppercase text-white">Ishan Fitness</span>
+            <Activity className="h-5 w-5 text-emerald-400" />
+            <span className="text-sm font-semibold tracking-wide text-white">Ishan Fitness</span>
           </div>
           
-          {/* Social Media Links (Using Pure SVGs to stop build failures) */}
-          <div className="flex items-center gap-5 text-zinc-500">
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-[#bfff00] transition-colors p-1" aria-label="Instagram">
+          {/* Social Media Links */}
+          <div className="flex items-center gap-5 text-slate-400">
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors p-1" aria-label="Instagram">
               <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-[#bfff00] transition-colors p-1" aria-label="LinkedIn">
+            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors p-1" aria-label="LinkedIn">
               <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-            </a>
-            <a href="https://youtube.com" target="_blank" rel="noreferrer" className="hover:text-[#bfff00] transition-colors p-1" aria-label="YouTube">
-              <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.895.502 5.784a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.895 24 12 24 12s0-3.895-.502-5.784zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             </a>
           </div>
         </div>
       </nav>
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[85vh] flex flex-col items-center justify-center px-4 text-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/40 via-black to-black border-b border-zinc-900">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium tracking-wider uppercase bg-zinc-900/80 border border-zinc-800 text-[#bfff00]">
-            <Briefcase className="h-3 w-3" /> Engineered For Busy Professionals
+      <section className="relative min-h-[75vh] flex flex-col items-center justify-center px-4 text-center border-b border-slate-900">
+        <div className="max-w-3xl mx-auto space-y-6">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-slate-900 border border-slate-800 text-emerald-400">
+            <Briefcase className="h-3.5 w-3.5" /> Tailored for professionals
           </span>
           
-          <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight uppercase text-white leading-none">
-            Build Your Elite Physique <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#bfff00] to-white">
-              Without Quitting Your Career
-            </span>
+          <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+            Build a sustainable, healthy routine <br />
+            <span className="text-slate-400 font-normal">without sacrificing your career.</span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-sm md:text-base text-zinc-400 font-medium leading-relaxed">
-            The data-driven, high-efficiency transformation system built specifically for corporate workers, executives, and high-stress desk professionals.
+          <p className="max-w-xl mx-auto text-sm sm:text-base text-slate-400 leading-relaxed">
+            A practical, balanced fitness framework designed around demanding jobs, busy schedules, and real-world routines.
           </p>
 
-          {/* ACTIONS BAR */}
-          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+          {/* ACTIONS BAR (Softer styling, removed extreme black and neon) */}
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4 max-w-sm mx-auto w-full">
             <button
               onClick={scrollToForm}
-              className="w-full sm:w-auto bg-[#bfff00] hover:bg-white text-black font-extrabold text-xs px-8 py-4 rounded-xl shadow-2xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+              className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm px-6 py-3 rounded-lg shadow-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
-              Apply For Allocation
-              <ChevronDown className="h-4 w-4 stroke-[3]" />
+              Get Started Today
+              <ChevronDown className="h-4 w-4" />
             </button>
             
             <a
               href="tel:+917297946193" 
-              className="w-full sm:w-auto bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-white font-extrabold text-xs px-8 py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap"
+              className="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 font-semibold text-sm px-6 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              <PhoneCall className="h-3.5 w-3.5 text-[#bfff00]" />
-              Call Coach Ishan
+              <PhoneCall className="h-4 w-4 text-emerald-400" />
+              Speak with Ishan
             </a>
           </div>
         </div>
       </section>
 
-      {/* 2. THE 8-YEAR CREDIBILITY SECTION */}
-      <section className="max-w-6xl mx-auto px-4 py-20 border-b border-zinc-900">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-6">
-            <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">The Coach Background</span>
-            <h2 className="text-2xl md:text-4xl font-extrabold text-white uppercase tracking-tight">
-              8 Years of Continuous Gym Execution While Working Corporate
+      {/* 2. THE BACKGROUND SECTION */}
+      <section className="max-w-5xl mx-auto px-6 py-16 border-b border-slate-900">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-7 space-y-4">
+            <span className="text-xs font-semibold text-emerald-400 tracking-wider uppercase">My Approach</span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+              A fitness philosophy that understands your workday.
             </h2>
-            <div className="h-1 w-12 bg-[#bfff00]" />
-            <p className="text-zinc-400 text-sm md:text-base leading-relaxed font-medium">
-              I don't build unrealistic fitness programs designed for influencers who live in the gym, cook 6 fresh meals a day, and sleep 10 hours a night. You don't have that luxury.
+            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+              I don't build complex, time-consuming fitness programs designed for athletes who live in the gym. Most professional people don't have that lifestyle.
             </p>
-            <p className="text-zinc-400 text-sm md:text-base leading-relaxed font-medium">
-              For **8 straight years**, I balanced the high-stress demands of a professional job with elite-level physical progress. I know what it’s like to sit at a desk for 9 hours, face cognitive exhaustion, and still need to execute. My protocols are engineered directly around meetings, deadlines, and limited energy stores.
+            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+              For over eight years, I managed a demanding corporate career while consistently hitting my personal fitness goals. I understand what it's like to finish a long day of mental focus and still want to stay healthy. These plans are designed directly around your constraints.
             </p>
           </div>
 
+          {/* Cleaner grid counters without pure stark blocks */}
           <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-            <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl">
-              <div className="text-3xl font-black text-white font-mono">8+ YEARS</div>
-              <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mt-1">Dual Career & Gym Execution</div>
+            <div className="bg-slate-900/50 border border-slate-900 p-5 rounded-xl">
+              <div className="text-2xl font-bold text-white">8+ Years</div>
+              <div className="text-xs text-slate-400 mt-0.5">Balancing Career & Fitness</div>
             </div>
-            <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl">
-              <div className="text-3xl font-black text-[#bfff00] font-mono">10,000+ HRS</div>
-              <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mt-1">Of Corporate Stress Optimization</div>
-            </div>
-            <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl sm:col-span-2 lg:col-span-1">
-              <div className="text-3xl font-black text-white font-mono">100%</div>
-              <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mt-1">Tailored To Desk-Bound Frameworks</div>
+            <div className="bg-slate-900/50 border border-slate-900 p-5 rounded-xl">
+              <div className="text-2xl font-bold text-emerald-400">Practical</div>
+              <div className="text-xs text-slate-400 mt-0.5">Built Around Desk Schedules</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* 3. SYSTEM PILLARS */}
-      <section className="max-w-6xl mx-auto px-4 py-20 border-b border-zinc-900">
-        <div className="text-center max-w-xl mx-auto space-y-2 mb-16">
-          <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">The Methodology</span>
-          <h2 className="text-3xl font-extrabold text-white uppercase tracking-tight">Built For Your Lifestyle Constraints</h2>
+      <section className="max-w-5xl mx-auto px-6 py-16 border-b border-slate-900">
+        <div className="text-center max-w-xl mx-auto space-y-2 mb-12">
+          <h2 className="text-2xl font-bold text-white tracking-tight">Core Principles</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-zinc-950/40 border border-zinc-900 p-8 rounded-2xl space-y-4 hover:border-zinc-800 transition-colors">
-            <div className="h-10 w-10 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800">
-              <Clock className="h-5 w-5 text-[#bfff00]" />
+          <div className="bg-slate-900/20 border border-slate-900 p-6 rounded-xl space-y-3">
+            <div className="h-9 w-9 bg-slate-900 rounded-lg flex items-center justify-center border border-slate-800">
+              <Clock className="h-4 w-4 text-emerald-400" />
             </div>
-            <h3 className="text-lg font-bold text-white uppercase tracking-tight">Time Optimization</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed font-medium">
-              Ditch the counterproductive 2-hour workout habits. We implement high-yield 45-minute density programming designed to generate peak metabolic results in minimal time frames.
+            <h3 className="text-base font-semibold text-white">Efficient Workouts</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              No need for counterproductive 2-hour sessions. We use focused, highly optimized routines that yield maximum results in 45 minutes or less.
             </p>
           </div>
 
-          <div className="bg-zinc-950/40 border border-zinc-900 p-8 rounded-2xl space-y-4 hover:border-zinc-800 transition-colors">
-            <div className="h-10 w-10 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800">
-              <Utensils className="h-5 w-5 text-[#bfff00]" />
+          <div className="bg-slate-900/20 border border-slate-900 p-6 rounded-xl space-y-3">
+            <div className="h-9 w-9 bg-slate-900 rounded-lg flex items-center justify-center border border-slate-800">
+              <Utensils className="h-4 w-4 text-emerald-400" />
             </div>
-            <h3 className="text-lg font-bold text-white uppercase tracking-tight">Corporate Nutrition</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed font-medium">
-              No impractical meal prep boxes or social isolation. Nutrition parameters are configured to cleanly absorb business lunches, travel schedules, and busy family dynamic patterns.
+            <h3 className="text-base font-semibold text-white">Flexible Nutrition</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              No restrictive meal prep or avoiding social meals. Your nutrition plan is designed to naturally accommodate business dinners, work travel, and family nights.
             </p>
           </div>
 
-          <div className="bg-zinc-950/40 border border-zinc-900 p-8 rounded-2xl space-y-4 hover:border-zinc-800 transition-colors">
-            <div className="h-10 w-10 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800">
-              <Brain className="h-5 w-5 text-[#bfff00]" />
+          <div className="bg-slate-900/20 border border-slate-900 p-6 rounded-xl space-y-3">
+            <div className="h-9 w-9 bg-slate-900 rounded-lg flex items-center justify-center border border-slate-800">
+              <Brain className="h-4 w-4 text-emerald-400" />
             </div>
-            <h3 className="text-lg font-bold text-white uppercase tracking-tight">Cortisol & Burnout Control</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed font-medium">
-              High desk stress destroys physical progress. Training volume and stress load indicators are micro-adjusted dynamically to reduce professional fatigue and optimize deep sleep cycles.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* INSIDE THE BLUEPRINT PREVIEW GRID */}
-      <section className="max-w-6xl mx-auto px-4 py-20 border-b border-zinc-900">
-        <div className="text-center max-w-xl mx-auto space-y-2 mb-16">
-          <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">The Infrastructure</span>
-          <h2 className="text-3xl font-extrabold text-white uppercase tracking-tight">Inside Your Custom Blueprint</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl space-y-4">
-            <div className="h-12 w-12 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center">
-              <Smartphone className="h-6 w-6 text-[#bfff00]" />
-            </div>
-            <h3 className="text-xl font-bold text-white uppercase tracking-tight">Mobile Workout Delivery</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              No paper sheets or loose notes. Access clean, mobile-optimized templates directly on the gym floor, complete with strict tracking systems, metric inputs, and dynamic form video parameters.
-            </p>
-          </div>
-
-          <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl space-y-4">
-            <div className="h-12 w-12 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center">
-              <BarChart3 className="h-6 w-6 text-[#bfff00]" />
-            </div>
-            <h3 className="text-xl font-bold text-white uppercase tracking-tight">Adaptive Macro Engine</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              A dynamic nutrition interface that calculates and balances your caloric updates automatically based on seasonal shifts, step targets, and workplace fatigue parameters.
-            </p>
-          </div>
-
-          <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl space-y-4">
-            <div className="h-12 w-12 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center">
-              <MessageSquare className="h-6 w-6 text-[#bfff00]" />
-            </div>
-            <h3 className="text-xl font-bold text-white uppercase tracking-tight">Direct WhatsApp Auditing</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              24/7 direct communication line. Submit form check videos, request menu reviews, or pivot scheduling blueprints on the fly with real-time audio guidance directly from Ishan.
+            <h3 className="text-base font-semibold text-white">Burnout Prevention</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Workplace fatigue is real. Training volumes are continually adjusted to relieve workday stress and protect your sleep quality, rather than draining you further.
             </p>
           </div>
         </div>
       </section>
 
-      {/* FREQUENTLY ASKED QUESTIONS (FAQ) */}
-      <section className="max-w-4xl mx-auto px-4 py-20 border-b border-zinc-900">
-        <div className="text-center space-y-2 mb-16">
-          <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">Friction Clearance</span>
-          <h2 className="text-3xl font-extrabold text-white uppercase tracking-tight">Frequently Asked Parameters</h2>
+      {/* 4. BLUEPRINT DETAILS */}
+      <section className="max-w-5xl mx-auto px-6 py-16 border-b border-slate-900">
+        <div className="text-center max-w-xl mx-auto space-y-2 mb-12">
+          <h2 className="text-2xl font-bold text-white tracking-tight">What's Included</h2>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-slate-900/40 border border-slate-900 p-5 rounded-xl space-y-3">
+            <Smartphone className="h-5 w-5 text-emerald-400" />
+            <h3 className="text-base font-semibold text-white">Digital Delivery</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Clean, easy-to-read workout logs and tracking guides optimized straight for your smartphone while you're on the move.
+            </p>
+          </div>
+
+          <div className="bg-slate-900/40 border border-slate-900 p-5 rounded-xl space-y-3">
+            <BarChart3 className="h-5 w-5 text-emerald-400" />
+            <h3 className="text-base font-semibold text-white">Adaptive Planning</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              A responsive plan that easily scales and balances out your fitness goals depending on seasonal busy periods or travel.
+            </p>
+          </div>
+
+          <div className="bg-slate-900/40 border border-slate-900 p-5 rounded-xl space-y-3">
+            <MessageSquare className="h-5 w-5 text-emerald-400" />
+            <h3 className="text-base font-semibold text-white">Direct Communication</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              A supportive feedback loop to tweak schedules on the go, answer everyday nutrition questions, and keep you confidently moving forward.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ SECTION */}
+      <section className="max-w-3xl mx-auto px-6 py-16 border-b border-slate-900">
+        <div className="text-center mb-12">
+          <h2 className="text-2xl font-bold text-white tracking-tight">Frequently Asked Questions</h2>
+        </div>
+
+        <div className="space-y-3">
           {faqs.map((faq, index) => (
-            <div key={index} className="bg-zinc-950/60 border border-zinc-900 rounded-2xl overflow-hidden transition-all duration-200">
+            <div key={index} className="bg-slate-900/30 border border-slate-900 rounded-xl overflow-hidden transition-all duration-200">
               <button
                 onClick={() => toggleFaq(index)}
-                className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 font-bold text-sm md:text-base text-white hover:text-[#bfff00] uppercase tracking-tight transition-colors cursor-pointer"
+                className="w-full text-left px-5 py-4 flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-slate-200 hover:text-emerald-400 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <HelpCircle className="h-4 w-4 text-zinc-500 shrink-0" />
+                  <HelpCircle className="h-4 w-4 text-slate-500 shrink-0" />
                   <span>{faq.question}</span>
                 </div>
-                <ChevronDown className={`h-4 w-4 text-zinc-400 shrink-0 transition-transform duration-200 ${openFaq === index ? "rotate-180 text-[#bfff00]" : ""}`} />
+                <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-200 ${openFaq === index ? "rotate-180 text-emerald-400" : ""}`} />
               </button>
               
-              <div className={`transition-all duration-200 ease-in-out px-6 ${openFaq === index ? "pb-6 max-h-40 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}>
-                <p className="text-xs md:text-sm text-zinc-400 leading-relaxed font-medium border-t border-zinc-900/80 pt-4">
+              <div className={`transition-all duration-200 ease-in-out px-5 ${openFaq === index ? "pb-5 max-h-40 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}>
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-900 pt-3">
                   {faq.answer}
                 </p>
               </div>
@@ -246,14 +229,16 @@ export default function App() {
       </section>
 
       {/* INTAKE PORTAL */}
-      <section id="intake-portal" className="px-4 py-20 bg-gradient-to-b from-black to-zinc-950">
-        <InquiryForm />
+      <section id="intake-portal" className="px-6 py-16 bg-slate-950">
+        <div className="max-w-xl mx-auto">
+          <InquiryForm />
+        </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="border-t border-zinc-900 py-8 text-center text-[10px] font-mono text-zinc-500 uppercase tracking-widest space-y-4">
+      <footer className="border-t border-slate-900 py-8 text-center text-xs text-slate-500 tracking-wide">
         <div>
-          © {new Date().getFullYear()} Ishan Fitness. All Rights Reserved. Private Coaching Allocation.
+          © {new Date().getFullYear()} Ishan Fitness. All Rights Reserved. Personal Fitness Coaching.
         </div>
       </footer>
 
