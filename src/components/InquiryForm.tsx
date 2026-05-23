@@ -21,6 +21,17 @@ const FITNESS_LEVELS = [
   { value: 'advanced', label: 'Advanced (3+ years consistent)' },
 ];
 
+const INVESTMENT_OPTIONS = [
+  { value: 'ready', label: 'I am ready to financially invest in premium 1-on-1 coaching' },
+  { value: 'details', label: 'I need more details on pricing first' },
+  { value: 'budget', label: 'I am looking for a free or low-budget program' },
+];
+
+const INJURY_OPTIONS = [
+  { value: 'none', label: 'None - I am good to go!' },
+  { value: 'yes', label: 'Yes, I have past/current injuries (please detail below)' },
+];
+
 export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryFormProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -30,6 +41,8 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryForm
     fitnessLevel: 'intermediate',
     targetCalories: '',
     bmi: prefilledBmi || '',
+    coachingInvestment: 'ready',
+    injuries: 'none',
     message: '',
   });
 
@@ -62,9 +75,12 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryForm
     setSubmitting(true);
     setServerError(null);
 
-    const finalMessage = formData.bmi 
-      ? `[Auto-Calculated BMI: ${formData.bmi}] ${formData.message}`.trim()
-      : formData.message;
+    const bmiPart = formData.bmi ? `[Auto-Calculated BMI: ${formData.bmi}]` : '';
+    const investLabel = INVESTMENT_OPTIONS.find(o => o.value === formData.coachingInvestment)?.label || formData.coachingInvestment;
+    const injuryLabel = INJURY_OPTIONS.find(o => o.value === formData.injuries)?.label || formData.injuries;
+    const detailsPart = `[Coaching Investment: ${investLabel}] [Injuries: ${injuryLabel}]`;
+    
+    const finalMessage = [bmiPart, detailsPart, formData.message].filter(Boolean).join(' ').trim();
 
     try {
       const { error } = await supabase.from('inquiries').insert([
@@ -214,7 +230,47 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryForm
                 </div>
               </div>
 
-              {/* Row 4: Message */}
+              {/* Row 4: Coaching Investment & Injuries */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">
+                    Coaching Investment
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="coachingInvestment"
+                      value={formData.coachingInvestment}
+                      onChange={handleChange}
+                      className="w-full appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors cursor-pointer"
+                    >
+                      {INVESTMENT_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">
+                    Injuries / Medical Conditions
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="injuries"
+                      value={formData.injuries}
+                      onChange={handleChange}
+                      className="w-full appearance-none bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-lime-500 transition-colors cursor-pointer"
+                    >
+                      {INJURY_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 5: Message */}
               <div>
                 <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">
                   Tell Me About Yourself
@@ -293,6 +349,18 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryForm
                   <span className="text-[#bfff00] font-mono font-semibold">{formData.bmi}</span>
                 </div>
               )}
+              <div className="flex flex-col gap-1 border-t border-zinc-800/50 pt-2 text-xs">
+                <span className="text-zinc-500">Coaching Investment</span>
+                <span className="text-[#bfff00] font-mono text-[10px] uppercase font-bold text-wrap">
+                  {INVESTMENT_OPTIONS.find(o => o.value === formData.coachingInvestment)?.label}
+                </span>
+              </div>
+              <div className="flex flex-col gap-1 border-t border-zinc-800/50 pt-2 text-xs">
+                <span className="text-zinc-500">Injuries / Medical Conditions</span>
+                <span className="text-white font-mono text-[10px] uppercase font-bold text-wrap">
+                  {INJURY_OPTIONS.find(o => o.value === formData.injuries)?.label}
+                </span>
+              </div>
             </div>
             <button
               onClick={() => setSucceeded(false)}
