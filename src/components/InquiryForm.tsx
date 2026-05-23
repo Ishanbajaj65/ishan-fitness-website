@@ -2,11 +2,6 @@ import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Send, CheckCircle2, Loader2 } from 'lucide-react';
 
-interface InquiryFormProps {
-  initialGoal?: string;
-  preloadedCalories?: number;
-}
-
 export default function InquiryForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -19,7 +14,7 @@ export default function InquiryForm() {
     setIsSubmitting(true);
 
     try {
-      // Sends ONLY the 3 exact columns currently present in your Supabase table
+      // Connects directly to your clean 3 columns in Supabase
       const { error } = await supabase
         .from('leads')
         .insert([
@@ -37,7 +32,7 @@ export default function InquiryForm() {
       setEmail('');
       setWhatsapp('');
     } catch (err) {
-      console.error('Submission Error:', err);
+      console.error('Database Error Details:', err);
       alert('Application failed to transmit. Please check your network connection and try again.');
     } finally {
       setIsSubmitting(false);
