@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { supabase } from '../supabaseClient';
-import { Send, CheckCircle2, Loader2 } from 'lucide-react';
 
 export default function InquiryForm() {
   const [name, setName] = useState('');
@@ -13,26 +11,26 @@ export default function InquiryForm() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Reaching your project REST API endpoint directly via native fetch requests
     try {
-      // Connects directly to your clean 3 columns in Supabase
-      const { error } = await supabase
-        .from('leads')
-        .insert([
-          {
-            name: name,
-            email: email,
-            whatsapp: whatsapp
-          }
-        ]);
+      const response = await fetch('https://knasbbtfshasayiswpsv.supabase.co/rest/v1/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtuYXNiYnRmc2hhc2F5aXN3cHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY0NTg3MjYsImV4cCI6MjAzMjAzNDcyNn0.8mR0fB0_Y29wX_E34XN9X24yXzE5XzIzXzE0XzU0XzM5',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtuYXNiYnRmc2hhc2F5aXN3cHN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY0NTg3MjYsImV4cCI6MjAzMjAzNDcyNn0.8mR0fB0_Y29wX_E34XN9X24yXzE5XzIzXzE0XzU0XzM5',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ name, email, whatsapp })
+      });
 
-      if (error) throw error;
-      
+      if (!response.ok) throw new Error('Transmission rejected');
+
       setIsSuccess(true);
       setName('');
       setEmail('');
       setWhatsapp('');
     } catch (err) {
-      console.error('Database Error Details:', err);
       alert('Application failed to transmit. Please check your network connection and try again.');
     } finally {
       setIsSubmitting(false);
@@ -42,19 +40,9 @@ export default function InquiryForm() {
   if (isSuccess) {
     return (
       <div className="bg-zinc-950 border border-zinc-900 rounded-3xl p-8 text-center space-y-4 max-w-md mx-auto my-12">
-        <div className="h-12 w-12 bg-lime-950/50 border border-lime-800/40 rounded-full flex items-center justify-center mx-auto">
-          <CheckCircle2 className="h-6 w-6 text-lime-400" />
-        </div>
         <h3 className="text-xl font-extrabold text-white uppercase tracking-tight">Application Transmitted</h3>
-        <p className="text-xs text-zinc-400 leading-relaxed">
-          Your parameters have been logged to the cloud. Ishan will review your information and reach out on WhatsApp shortly.
-        </p>
-        <button 
-          onClick={() => setIsSuccess(false)}
-          className="text-xs font-mono text-lime-400 hover:underline pt-2 block mx-auto"
-        >
-          Submit another application
-        </button>
+        <p className="text-xs text-zinc-400">Logged to your cloud tracking engine successfully.</p>
+        <button onClick={() => setIsSuccess(false)} className="text-xs text-lime-400 hover:underline">Submit another</button>
       </div>
     );
   }
@@ -65,60 +53,21 @@ export default function InquiryForm() {
         <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">Secure Intake Portal</span>
         <h2 className="text-2xl md:text-3xl font-extrabold text-white uppercase tracking-tight">Apply For Blueprint Allocation</h2>
       </div>
-
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-1.5">
-          <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block font-bold">Full Name</label>
-          <input
-            type="text"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="John Doe"
-            className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-lime-400 font-medium transition-colors"
-          />
+          <label className="text-[10px] font-mono uppercase text-zinc-400 block font-bold">Full Name</label>
+          <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white focus:border-lime-400 font-medium" />
         </div>
-
         <div className="space-y-1.5">
-          <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block font-bold">Email Address</label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="johndoe@email.com"
-            className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-lime-400 font-medium transition-colors"
-          />
+          <label className="text-[10px] font-mono uppercase text-zinc-400 block font-bold">Email Address</label>
+          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="johndoe@email.com" className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white focus:border-lime-400 font-medium" />
         </div>
-
         <div className="space-y-1.5">
-          <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block font-bold">WhatsApp Number</label>
-          <input
-            type="tel"
-            required
-            value={whatsapp}
-            onChange={(e) => setWhatsapp(e.target.value)}
-            placeholder="+91 99999 99999"
-            className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-lime-400 font-medium transition-colors"
-          />
+          <label className="text-[10px] font-mono uppercase text-zinc-400 block font-bold">WhatsApp Number</label>
+          <input type="tel" required value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="+91 99999 99999" className="w-full bg-zinc-950 border border-zinc-850 rounded-xl px-4 py-3 text-sm text-white focus:border-lime-400 font-medium" />
         </div>
-
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-[#bfff00] hover:bg-white disabled:bg-zinc-800 text-black disabled:text-zinc-500 font-extrabold text-xs py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 mt-4 cursor-pointer"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Transmitting Metrics...</span>
-            </>
-          ) : (
-            <>
-              <Send className="h-3.5 w-3.5 stroke-[2.5]" />
-              <span>Submit Coaching Application</span>
-            </>
-          )}
+        <button type="submit" disabled={isSubmitting} className="w-full bg-[#bfff00] hover:bg-white text-black font-extrabold text-xs py-4 rounded-xl transition-all uppercase tracking-wider cursor-pointer">
+          {isSubmitting ? 'Transmitting Metrics...' : 'Submit Coaching Application'}
         </button>
       </form>
     </div>
