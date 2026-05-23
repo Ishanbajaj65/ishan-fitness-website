@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../supabaseClient';
 import { Send, CheckCircle } from 'lucide-react';
 
-export default function InquiryForm() {
+// Bypassing any old properties that App.tsx might be sending
+export default function InquiryForm(props: any) {
   const [formData, setFormData] = useState({
     name: '',
     phone: ''
@@ -21,6 +22,7 @@ export default function InquiryForm() {
     setServerError(null);
 
     try {
+      // Matching to the specific columns inside Supabase
       const { error } = await supabase
         .from('inquiries')
         .insert([
@@ -34,7 +36,7 @@ export default function InquiryForm() {
       setSucceeded(true);
     } catch (err: any) {
       console.error(err);
-      setServerError(err.message || 'Database connection error. Please try again.');
+      setServerError(err.message || 'Database error. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -54,9 +56,6 @@ export default function InquiryForm() {
               <h3 className="text-3xl font-extrabold text-white mt-3 font-sans tracking-tight">
                 LET'S BUILD YOUR BIOLOGY.
               </h3>
-              <p className="text-zinc-400 text-sm mt-2">
-                Enter your details below and I will get in touch with you shortly.
-              </p>
             </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-5 max-w-xl mx-auto">
@@ -111,7 +110,7 @@ export default function InquiryForm() {
             </div>
             <h3 className="text-3xl font-extrabold text-white mb-2 tracking-tight">APPLICATION TRANSMITTED</h3>
             <p className="text-zinc-400 text-sm max-w-md mx-auto mb-4">
-              Thank you, <span className="text-white font-bold">{formData.name}</span>! Your contact information has been safely recorded.
+              Thank you, <span className="text-white font-bold">{formData.name}</span>! Your details have been safely recorded.
             </p>
           </motion.div>
         )}
