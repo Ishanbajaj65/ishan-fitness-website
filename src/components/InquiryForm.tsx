@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useForm, ValidationError } from '@formspree/react';
-import { Send, CheckCircle, Flame, Dumbbell, ShieldCheck } from 'lucide-react';
+import { Send, CheckCircle, Flame, Dumbbell } from 'lucide-react';
 import { ClientInquiry } from '../types';
 
 interface InquiryFormProps {
@@ -10,8 +10,8 @@ interface InquiryFormProps {
 }
 
 export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalories }: InquiryFormProps) {
-  // Integrated Formspree Hook with your explicit ID
-  const [state, handleSubmit] = useForm("xjgzokqw");
+  // Configured with your updated Formspree ID
+  const [state, handleSubmit] = useForm("mvzyqovr");
 
   const [formData, setFormData] = useState<ClientInquiry>({
     name: '',
@@ -73,7 +73,7 @@ export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalorie
   const diagnosis = getCustomDiagnosis();
 
   return (
-    <div id="booking-section" className="bg-slate-900/30 border border-slate-900 rounded-2xl p-6 md:p-8 relative overflow-hidden">
+    <div id="booking-section" className="w-full bg-slate-900/30 border border-slate-900 rounded-2xl p-6 md:p-8 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
       <AnimatePresence mode="wait">
@@ -96,7 +96,6 @@ export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalorie
               </p>
             </div>
 
-            {/* Formspree submission hooks linked here */}
             <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -122,4 +121,19 @@ export default function InquiryForm({ initialGoal = 'fat-loss', preloadedCalorie
                     name="email"
                     required
                     value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                    placeholder="name@company.com"
+                  />
+                  <ValidationError prefix="Email" field="email" errors={state.errors} className="text-red-400 text-[11px] mt-1 block" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="fitnessGoal" className="block text-xs text-slate-400 font-medium mb-1.5">Physique Target</label>
+                  <select
+                    id="fitnessGoal"
+                    name="fitnessGoal"
+                    value={formData.fitnessGoal}
+                    onChange={(
