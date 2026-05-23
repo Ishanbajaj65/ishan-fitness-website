@@ -1,11 +1,40 @@
-import React from 'react';
-import { Shield, Clock, Utensils, Brain, Activity, Briefcase, ChevronDown } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+  Shield, Clock, Utensils, Brain, Activity, Briefcase, 
+  ChevronDown, MessageSquare, Smartphone, BarChart3, HelpCircle 
+} from 'lucide-react';
 import InquiryForm from './components/InquiryForm';
 
 export default function App() {
+  // State for controlling the FAQ accordion toggles
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const toggleFaq = (index: number) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
+
   const scrollToForm = () => {
     document.getElementById('intake-portal')?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const faqs = [
+    {
+      question: "Do I need to spend hours cooking and meal prepping?",
+      answer: "Absolutely not. We optimize your parameters around your active lifestyle. I will teach you exactly how to navigate restaurant menus, corporate cafeterias, client dinners, and quick 10-minute high-protein assembly options so your career never suffers."
+    },
+    {
+      question: "What happens when I travel for business or hit a busy week?",
+      answer: "This is exactly where my 8 years of corporate experience kicks in. We don't discard the plan; we implement 'Travel & Crisis Frameworks'. I configure optimized, high-yield hotel gym workflows and travel-friendly nutritional rules that lock in your progress while you focus on your business targets."
+    },
+    {
+      question: "I am completely drained after a 9-hour shift. How will I find the energy to train?",
+      answer: "Most commercial plans cause burnout because they add massive stress to an already exhausted body. Our training blocks manage your central nervous system fatigue indices. They are structured to optimize cellular energy, improve sleep quality, and release cognitive stress, leaving you more focused for work the next morning."
+    },
+    {
+      question: "How is this different from hiring a standard personal trainer?",
+      answer: "Standard trainers give you an hour of counting reps and a generic PDF meal sheet. This is a comprehensive high-performance infrastructure. We optimize your lifestyle data, stress parameters, metrics, and mindset via daily communication loops, creating a completely bulletproof path to results built specifically for busy desk professionals."
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-[#bfff00] selection:text-black">
@@ -36,106 +65,4 @@ export default function App() {
           <div className="pt-4">
             <button
               onClick={scrollToForm}
-              className="bg-[#bfff00] hover:bg-white text-black font-extrabold text-xs px-8 py-4 rounded-xl shadow-2xl transition-all uppercase tracking-wider flex items-center gap-2 mx-auto cursor-pointer"
-            >
-              Apply For Blueprint Allocation
-              <ChevronDown className="h-4 w-4 stroke-[3]" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. THE 8-YEAR CREDIBILITY SECTION */}
-      <section className="max-w-6xl mx-auto px-4 py-20 border-b border-zinc-900">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
-          <div className="lg:col-span-7 space-y-6">
-            <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">The Coach Background</span>
-            <h2 className="text-2xl md:text-4xl font-extrabold text-white uppercase tracking-tight">
-              8 Years of Continuous Gym Execution While Working Corporate
-            </h2>
-            <div className="h-1 w-12 bg-[#bfff00]" />
-            <p className="text-zinc-400 text-sm md:text-base leading-relaxed font-medium">
-              I don't build unrealistic fitness programs designed for influencers who live in the gym, cook 6 fresh meals a day, and sleep 10 hours a night. You don't have that luxury.
-            </p>
-            <p className="text-zinc-400 text-sm md:text-base leading-relaxed font-medium">
-              For **8 straight years**, I balanced the high-stress demands of a professional job with elite-level physical progress. I know what it’s like to sit at a desk for 9 hours, face cognitive exhaustion, and still need to execute. My protocols are engineered directly around meetings, deadlines, and limited energy stores.
-            </p>
-          </div>
-
-          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-            <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl">
-              <div className="text-3xl font-black text-white font-mono">8+ YEARS</div>
-              <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mt-1">Dual Career & Gym Execution</div>
-            </div>
-            <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl">
-              <div className="text-3xl font-black text-[#bfff00] font-mono">10,000+ HRS</div>
-              <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mt-1">Of Corporate Stress Optimization</div>
-            </div>
-            <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl sm:col-span-2 lg:col-span-1">
-              <div className="text-3xl font-black text-white font-mono">100%</div>
-              <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mt-1">Tailored To Desk-Bound Frameworks</div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 3. CORPORATE FRICTION SYSTEM PILLARS */}
-      <section className="max-w-6xl mx-auto px-4 py-20 border-b border-zinc-900">
-        <div className="text-center max-w-xl mx-auto space-y-2 mb-16">
-          <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">The Methodology</span>
-          <h2 className="text-3xl font-extrabold text-white uppercase tracking-tight">Built For Your Lifestyle Constraints</h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          {/* Pillar 1 */}
-          <div className="bg-zinc-950/40 border border-zinc-900 p-8 rounded-2xl space-y-4 hover:border-zinc-800 transition-colors">
-            <div className="h-10 w-10 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800">
-              <Clock className="h-5 w-5 text-[#bfff00]" />
-            </div>
-            <h3 className="text-lg font-bold text-white uppercase tracking-tight">Time Optimization</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed font-medium">
-              Ditch the counterproductive 2-hour workout habits. We implement high-yield 45-minute density programming designed to generate peak metabolic results in minimal time frames.
-            </p>
-          </div>
-
-          {/* Pillar 2 */}
-          <div className="bg-zinc-950/40 border border-zinc-900 p-8 rounded-2xl space-y-4 hover:border-zinc-800 transition-colors">
-            <div className="h-10 w-10 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800">
-              <Utensils className="h-5 w-5 text-[#bfff00]" />
-            </div>
-            <h3 className="text-lg font-bold text-white uppercase tracking-tight">Corporate Nutrition</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed font-medium">
-              No impractical meal prep boxes or social isolation. Nutrition parameters are configured to cleanly absorb business lunches, travel schedules, and busy family dynamic patterns.
-            </p>
-          </div>
-
-          {/* Pillar 3 */}
-          <div className="bg-zinc-950/40 border border-zinc-900 p-8 rounded-2xl space-y-4 hover:border-zinc-800 transition-colors">
-            <div className="h-10 w-10 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800">
-              <Brain className="h-5 w-5 text-[#bfff00]" />
-            </div>
-            <h3 className="text-lg font-bold text-white uppercase tracking-tight">Cortisol & Burnout Control</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed font-medium">
-              High desk stress destroys physical progress. Training volume and stress load indicators are micro-adjusted dynamically to reduce professional fatigue and optimize deep sleep cycles.
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 4. THE INTAKE PORTAL CONTAINER */}
-      <section id="intake-portal" className="px-4 py-20 bg-gradient-to-b from-black to-zinc-950">
-        <InquiryForm />
-      </section>
-
-      {/* FOOTER */}
-      <footer className="border-t border-zinc-900 py-8 text-center text-[10px] font-mono text-zinc-600 uppercase tracking-widest">
-        © {new Date().getFullYear()} Ishan Fitness. All Rights Reserved. Private Coaching Allocation.
-      </footer>
-
-    </div>
-  );
-}
+              className="bg-
