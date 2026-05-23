@@ -1,0 +1,6 @@
+{
+  "name": "Personal Fitness Coaching Portal",
+  "description": "High-converting, interactive personal fitness coaching website featuring training programs, customized meal planners, client calculator, and FAQ for Coach Ishan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
