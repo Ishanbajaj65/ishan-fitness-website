@@ -86,6 +86,9 @@ export default function MacroCalculator({ onApplyMacros }: MacroCalculatorProps)
         protein: proteinGrams,
         carbs: carbGrams,
         fat: fatGrams,
+        proteinPct: Math.round((proteinCalories / targetCal) * 100),
+        carbsPct: Math.round((carbCalories / targetCal) * 100),
+        fatPct: Math.round((fatCalories / targetCal) * 100),
       });
       setLoading(false);
     }, 600);
@@ -311,7 +314,7 @@ export default function MacroCalculator({ onApplyMacros }: MacroCalculatorProps)
               {loading ? (
                 <>
                   <RefreshCw className="h-4 w-4 animate-spin text-zinc-800" />
-                  <span>Calibrating Metabolism Biolgically...</span>
+                  <span>Calibrating Physiology...</span>
                 </>
               ) : (
                 <>
@@ -385,7 +388,7 @@ export default function MacroCalculator({ onApplyMacros }: MacroCalculatorProps)
                         <span className="font-mono text-white font-medium">{result.protein}g <span className="text-zinc-500 font-sans text-[10px]">({result.protein * 4} kcal)</span></span>
                       </div>
                       <div className="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
-                        <div className="h-full bg-lime-400 rounded-full" style={{ width: '35%' }} />
+                        <div className="h-full bg-lime-400 rounded-full transition-all duration-700" style={{ width: `${result.proteinPct ?? 35}%` }} />
                       </div>
                     </div>
 
@@ -398,7 +401,7 @@ export default function MacroCalculator({ onApplyMacros }: MacroCalculatorProps)
                         <span className="font-mono text-white font-medium">{result.carbs}g <span className="text-zinc-500 font-sans text-[10px]">({result.carbs * 4} kcal)</span></span>
                       </div>
                       <div className="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
-                        <div className="h-full bg-zinc-400 rounded-full" style={{ width: '45%' }} />
+                        <div className="h-full bg-zinc-400 rounded-full transition-all duration-700" style={{ width: `${result.carbsPct ?? 45}%` }} />
                       </div>
                     </div>
 
@@ -411,7 +414,7 @@ export default function MacroCalculator({ onApplyMacros }: MacroCalculatorProps)
                         <span className="font-mono text-white font-medium">{result.fat}g <span className="text-zinc-500 font-sans text-[10px]">({result.fat * 9} kcal)</span></span>
                       </div>
                       <div className="h-2 w-full bg-zinc-950 rounded-full overflow-hidden">
-                        <div className="h-full bg-orange-500/80 rounded-full" style={{ width: '20%' }} />
+                        <div className="h-full bg-orange-500/80 rounded-full transition-all duration-700" style={{ width: `${result.fatPct ?? 20}%` }} />
                       </div>
                     </div>
                   </div>
