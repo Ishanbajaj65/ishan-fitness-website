@@ -121,15 +121,7 @@ A: ${f.answer}`).join('\n\n')}`;
             <a href="#faq-section" className="text-zinc-400 hover:text-white transition-colors">Questions</a>
           </nav>
 
-          {/* Copy Hub & Portal CTAs */}
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setIsCopyHubOpen(true)}
-              className="bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 rounded-xl px-4 py-2.5 text-xs font-mono uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-all active:scale-95"
-            >
-              <FileText className="h-4 w-4 text-lime-400" />
-              <span>Copywriter Copy Hub</span>
-            </button>
+          
             <a
               href="#booking-section"
               className="bg-[#bfff00] hover:bg-white text-black font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(191,255,0,0.15)] hidden sm:inline-block"
