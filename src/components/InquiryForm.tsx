@@ -21,7 +21,6 @@ export default function InquiryForm() {
     setServerError(null);
 
     try {
-      // Direct Data Insertion with strictly matched columns: name & phone
       const { error } = await supabase
         .from('inquiries')
         .insert([
@@ -112,7 +111,7 @@ export default function InquiryForm() {
             </div>
             <h3 className="text-3xl font-extrabold text-white mb-2 tracking-tight">APPLICATION TRANSMITTED</h3>
             <p className="text-zinc-400 text-sm max-w-md mx-auto mb-4">
-              Thank you, <span className="text-white font-bold">{formData.name}</span>! Your contact information has been safely recorded inside our system.
+              Thank you, <span className="text-white font-bold">{formData.name}</span>! Your contact information has been safely recorded.
             </p>
           </motion.div>
         )}
