@@ -6,6 +6,7 @@ import { Send, CheckCircle, ChevronDown } from 'lucide-react';
 interface InquiryFormProps {
   prefilledGoal?: string;
   prefilledBmi?: string;
+  prefilledCalories?: number;
 }
 
 const GOAL_OPTIONS = [
@@ -32,14 +33,14 @@ const INJURY_OPTIONS = [
   { value: 'yes', label: 'Yes, I have past/current injuries (please detail below)' },
 ];
 
-export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryFormProps) {
+export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalories }: InquiryFormProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     goal: prefilledGoal || 'fat-loss',
     fitnessLevel: 'intermediate',
-    targetCalories: '',
+    targetCalories: prefilledCalories ? String(prefilledCalories) : '',
     bmi: prefilledBmi || '',
     coachingInvestment: 'ready',
     injuries: 'none',
@@ -57,6 +58,12 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi }: InquiryForm
       setFormData((prev) => ({ ...prev, bmi: prefilledBmi }));
     }
   }, [prefilledBmi]);
+
+  useEffect(() => {
+    if (prefilledCalories) {
+      setFormData((prev) => ({ ...prev, targetCalories: String(prefilledCalories) }));
+    }
+  }, [prefilledCalories]);
 
   const [submitting, setSubmitting] = useState(false);
   const [succeeded, setSucceeded] = useState(false);

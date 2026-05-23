@@ -12,6 +12,7 @@ import { HERO_COPY, ABOUT_COPY } from './fitnessData';
 export default function App() {
   const [prefilledGoal, setPrefilledGoal] = useState<string | undefined>(undefined);
   const [prefilledBmi, setPrefilledBmi] = useState<string | undefined>(undefined);
+  const [prefilledCalories, setPrefilledCalories] = useState<number | undefined>(undefined);
   const [scrolled, setScrolled] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
@@ -27,8 +28,9 @@ export default function App() {
     document.getElementById('intake-portal')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleApplyBmi = (bmi: string) => {
+  const handleApplyBmi = (bmi: string, calories: number) => {
     setPrefilledBmi(bmi);
+    setPrefilledCalories(calories);
     setTimeout(() => {
       document.getElementById('intake-portal')?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -286,7 +288,7 @@ export default function App() {
 
         {/* ── 7. INQUIRY PORTAL ── */}
         <section id="intake-portal" className="px-margin-mobile md:px-margin-desktop py-24 max-w-4xl mx-auto">
-          <InquiryForm prefilledGoal={prefilledGoal} prefilledBmi={prefilledBmi} />
+          <InquiryForm prefilledGoal={prefilledGoal} prefilledBmi={prefilledBmi} prefilledCalories={prefilledCalories} />
         </section>
 
         {/* ── 8. FAQS SECTION ── */}

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { RefreshCw } from 'lucide-react';
 
 interface BmiCalculatorProps {
-  onApplyBmi: (bmi: string) => void;
+  onApplyBmi: (bmi: string, calories: number) => void;
 }
 
 export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
@@ -11,6 +11,8 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
   const [height, setHeight] = useState<string>('180');
   const [result, setResult] = useState<{ bmi: string; category: string; advice: string } | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [activityLevel, setActivityLevel] = useState<string>('moderate');
+  const [fitnessGoal, setFitnessGoal] = useState<string>('shred');
 
   const calculateBmi = () => {
     setLoading(true);
@@ -53,9 +55,41 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
     }, 600);
   };
 
+  const getEstimatedTargets = () => {
+    const wVal = parseFloat(weight);
+    const hVal = parseFloat(height);
+    if (isNaN(wVal) || isNaN(hVal) || hVal === 0) return { calories: 0, protein: 0 };
+
+    // BMR formula: Mifflin-St Jeor assuming default age of 25
+    const bmr = 10 * wVal + 6.25 * hVal - 120;
+
+    // Activity multiplier
+    let multiplier = 1.55;
+    if (activityLevel === 'sedentary') multiplier = 1.2;
+    if (activityLevel === 'light') multiplier = 1.375;
+    if (activityLevel === 'moderate') multiplier = 1.55;
+    if (activityLevel === 'high') multiplier = 1.725;
+
+    const tdee = bmr * multiplier;
+
+    // Goal adjustment
+    let calorieGoal = tdee;
+    if (fitnessGoal === 'shred') calorieGoal = tdee - 500;
+    if (fitnessGoal === 'build') calorieGoal = tdee + 350;
+
+    // Minimum safe calorie baseline
+    const finalCalories = Math.max(1200, Math.round(calorieGoal));
+
+    // Protein target: 2.2 grams per kg
+    const finalProtein = Math.round(wVal * 2.2);
+
+    return { calories: finalCalories, protein: finalProtein };
+  };
+
   const handleApply = () => {
     if (!result) return;
-    onApplyBmi(result.bmi);
+    const { calories } = getEstimatedTargets();
+    onApplyBmi(result.bmi, calories);
   };
 
   return (
@@ -67,7 +101,7 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
           BMI <span className="text-[#b8f600]">CALIBRATOR</span>
         </h2>
         <p className="font-mono text-xs text-on-surface/70 uppercase tracking-widest">
-          Input telemetry to analyze your current body mass index.
+          Input telemetry to analyze your current body mass index and estimated targets.
         </p>
       </div>
 
@@ -130,8 +164,8 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
             exit={{ opacity: 0, height: 0 }}
             className="max-w-2xl mx-auto mt-12 pt-8 border-t border-white/5 space-y-6"
           >
-            <div className="grid grid-cols-2 gap-4">
-              <div className="glass-card-active p-4 rounded-xl border border-[#b8f600] bg-[#b8f600]/5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="glass-card-active p-4 rounded-xl border border-[#b8f600] bg-[#b8f600]/5 flex flex-col justify-center">
                 <p className="text-[10px] font-mono text-[#b8f600] uppercase mb-1">Calculated BMI</p>
                 <p className="text-3xl font-black font-mono text-white">{result.bmi}</p>
               </div>
@@ -150,12 +184,86 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
               </p>
             </div>
 
+            {/* Dynamic Calorie & Protein Estimator Control Panel */}
+            <div className="glass-card-lime rounded-xl p-5 border border-[#b8f600]/20 space-y-6">
+              <div>
+                <span className="text-[10px] font-mono font-bold tracking-widest text-[#b8f600] uppercase block mb-3">
+                  1. select weekly activity level
+                </span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {[
+                    { val: 'sedentary', label: 'Sedentary', desc: 'No exercise' },
+                    { val: 'light', label: 'Light', desc: '1-2 days/wk' },
+                    { val: 'moderate', label: 'Moderate', desc: '3-4 days/wk' },
+                    { val: 'high', label: 'Active', desc: '5+ days/wk' }
+                  ].map(act => (
+                    <button
+                      key={act.val}
+                      onClick={() => setActivityLevel(act.val)}
+                      type="button"
+                      className={`px-3 py-2 rounded-lg text-left border transition-all cursor-pointer ${
+                        activityLevel === act.val
+                          ? 'bg-[#b8f600] text-black border-[#b8f600]'
+                          : 'bg-black/40 border-white/5 text-white/60 hover:text-white hover:border-white/10'
+                      }`}
+                    >
+                      <p className="text-[11px] font-bold uppercase font-mono tracking-wider">{act.label}</p>
+                      <p className={`text-[9px] font-sans ${activityLevel === act.val ? 'text-black/70' : 'text-white/40'}`}>{act.desc}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-mono font-bold tracking-widest text-[#b8f600] uppercase block mb-3">
+                  2. select primary target goal
+                </span>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { val: 'shred', label: 'Fat Loss & Shred', icon: 'bolt' },
+                    { val: 'recomp', label: 'Body Recomp', icon: 'sync' },
+                    { val: 'build', label: 'Muscle Growth', icon: 'fitness_center' }
+                  ].map(goal => (
+                    <button
+                      key={goal.val}
+                      onClick={() => setFitnessGoal(goal.val)}
+                      type="button"
+                      className={`px-3 py-3 rounded-lg text-center border transition-all cursor-pointer flex flex-col items-center justify-center gap-1 ${
+                        fitnessGoal === goal.val
+                          ? 'bg-[#b8f600] text-black border-[#b8f600]'
+                          : 'bg-black/40 border-white/5 text-white/60 hover:text-white hover:border-white/10'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-base">{goal.icon}</span>
+                      <p className="text-[10px] font-bold uppercase font-mono tracking-wider leading-none mt-1">{goal.label}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Targets Output Display */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                <div className="glass-card-active p-4 rounded-xl border border-[#b8f600]/30 bg-black/40 flex flex-col justify-center">
+                  <p className="text-[9px] font-mono text-[#b8f600] uppercase mb-1">Target Intake Goal</p>
+                  <p className="text-2xl font-black font-mono text-white">
+                    {getEstimatedTargets().calories} <span className="text-xs font-mono font-normal text-on-surface/60">kcal/day</span>
+                  </p>
+                </div>
+                <div className="glass-card-active p-4 rounded-xl border border-[#b8f600]/30 bg-black/40 flex flex-col justify-center">
+                  <p className="text-[9px] font-mono text-[#b8f600] uppercase mb-1">Target Protein Intake</p>
+                  <p className="text-2xl font-black font-mono text-white">
+                    {getEstimatedTargets().protein} <span className="text-xs font-mono font-normal text-on-surface/60">g/day</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <button
               onClick={handleApply}
               className="w-full glass-card hover:border-[#b8f600] hover:text-[#b8f600] text-white font-bold text-xs py-3 rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 mt-4 cursor-pointer"
               type="button"
             >
-              🚀 Apply calculated BMI to intake form
+              🚀 Apply calculated BMI & nutrition to intake form
             </button>
           </motion.div>
         )}
