@@ -3,11 +3,11 @@ import { supabase } from '../supabaseClient';
 import { Send, CheckCircle2, Loader2 } from 'lucide-react';
 
 interface InquiryFormProps {
-  initialGoal?: 'muscle' | 'fat-loss' | 'meal-plan' | 'recomp';
+  initialGoal?: string;
   preloadedCalories?: number;
 }
 
-export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormProps) {
+export default function InquiryForm() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
@@ -19,14 +19,14 @@ export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormPro
     setIsSubmitting(true);
 
     try {
+      // Sends ONLY the 3 exact columns currently present in your Supabase table
       const { error } = await supabase
         .from('leads')
         .insert([
           {
             name: name,
             email: email,
-            whatsapp: whatsapp,
-            selected_goal: initialGoal
+            whatsapp: whatsapp
           }
         ]);
 
@@ -52,7 +52,7 @@ export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormPro
         </div>
         <h3 className="text-xl font-extrabold text-white uppercase tracking-tight">Application Transmitted</h3>
         <p className="text-xs text-zinc-400 leading-relaxed">
-          Your blueprint parameters have been logged to the cloud. Ishan will review your physique requirements and reach out on WhatsApp shortly.
+          Your parameters have been logged to the cloud. Ishan will review your information and reach out on WhatsApp shortly.
         </p>
         <button 
           onClick={() => setIsSuccess(false)}
@@ -69,9 +69,6 @@ export default function InquiryForm({ initialGoal = 'fat-loss' }: InquiryFormPro
       <div className="space-y-2 mb-8 text-center">
         <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold">Secure Intake Portal</span>
         <h2 className="text-2xl md:text-3xl font-extrabold text-white uppercase tracking-tight">Apply For Blueprint Allocation</h2>
-        <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-          Active Goal Setup: <span className="text-white font-mono uppercase font-semibold">{initialGoal.replace('-', ' ')}</span>
-        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
