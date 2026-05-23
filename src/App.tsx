@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Activity, Dumbbell, Zap, ChevronRight, MessageCircle } from 'lucide-react';
+import { Activity, Dumbbell, Zap, ChevronRight, MessageCircle, Instagram } from 'lucide-react';
 import MacroCalculator from './components/MacroCalculator';
 import InquiryForm from './components/InquiryForm';
 import ProgramsSection from './components/ProgramsSection';
@@ -235,17 +235,32 @@ export default function App() {
         </div>
       </footer>
 
-      {/* ── FLOATING WHATSAPP BUTTON ── */}
-      <a
-        href="https://wa.me/917297946193?text=Hi%20Ishan%2C%20I%20saw%20your%20website%20and%20I'm%20interested%20in%20coaching."
-        target="_blank"
-        rel="noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-green-500 hover:bg-green-400 text-white font-bold text-xs px-4 py-3 rounded-2xl shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all hover:scale-105 active:scale-95"
-        aria-label="Chat on WhatsApp"
-      >
-        <MessageCircle className="h-4 w-4 fill-white" />
-        <span className="hidden sm:inline">Chat on WhatsApp</span>
-      </a>
+      {/* ── FLOATING BUTTONS ── */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        {/* Instagram */}
+        <a
+          href="https://www.instagram.com/ishan_bajaj04/"
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-center gap-2.5 bg-gradient-to-tr from-[#f09433] via-[#e6683c] via-[#dc2743] via-[#cc2366] to-[#bc1888] hover:opacity-90 text-white font-bold text-xs px-4 py-3 rounded-2xl shadow-[0_0_20px_rgba(220,39,67,0.3)] transition-all hover:scale-105 active:scale-95"
+          aria-label="Follow on Instagram"
+        >
+          <Instagram className="h-4 w-4" />
+          <span className="hidden sm:inline">Follow on Instagram</span>
+        </a>
+
+        {/* WhatsApp */}
+        <a
+          href="https://wa.me/917297946193?text=Hi%20Ishan%2C%20I%20saw%20your%20website%20and%20I'm%20interested%20in%20coaching."
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-center gap-2.5 bg-green-500 hover:bg-green-400 text-white font-bold text-xs px-4 py-3 rounded-2xl shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all hover:scale-105 active:scale-95"
+          aria-label="Chat on WhatsApp"
+        >
+          <MessageCircle className="h-4 w-4 fill-white" />
+          <span className="hidden sm:inline">Chat on WhatsApp</span>
+        </a>
+      </div>
     </div>
   );
 }
