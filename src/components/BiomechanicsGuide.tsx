@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Dumbbell, ShieldAlert, Award, ChevronRight } from 'lucide-react';
 
@@ -82,14 +82,14 @@ export default function BiomechanicsGuide() {
     <div id="biomechanics-guide" className="space-y-12 py-8">
       {/* Header */}
       <div className="text-center max-w-xl mx-auto space-y-4">
-        <span className="section-badge bg-[#bfff00]/10 border border-[#bfff00]/25 text-[#bfff00] px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase font-bold inline-flex items-center gap-2">
+        <span className="section-badge bg-[#fb7185]/10 border border-[#fb7185]/25 text-[#fb7185] px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase font-bold inline-flex items-center gap-2">
           <span className="material-symbols-outlined text-xs">fitness_center</span>
           Biomechanics Center
         </span>
         <h2 className="font-display text-4xl md:text-5xl font-black text-white tracking-tight uppercase">
           Master Your Form
         </h2>
-        <p className="text-[#8d9479] text-sm leading-relaxed">
+        <p className="text-[#9ca3af] text-sm leading-relaxed">
           Unlock maximum muscle growth and prevent injuries by mastering biomechanics. Click on a muscle group to view Ishan's strategic execution tips.
         </p>
       </div>
@@ -110,7 +110,7 @@ export default function BiomechanicsGuide() {
                   type="button"
                   className={`flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left cursor-pointer transition-all ${
                     isActive
-                      ? 'bg-[#bfff00] text-black border-[#bfff00] shadow-[0_0_15px_rgba(191,255,0,0.15)] font-bold'
+                      ? 'bg-[#fb7185] text-black border-[#fb7185] shadow-[0_0_15px_rgba(225,29,72,0.15)] font-bold'
                       : 'bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
                   }`}
                 >
@@ -133,20 +133,20 @@ export default function BiomechanicsGuide() {
               transition={{ duration: 0.3 }}
               className="glass-card rounded-3xl p-6 md:p-8 border border-white/5 h-full flex flex-col justify-between relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-40 h-40 bg-[#bfff00]/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute top-0 right-0 w-40 h-40 bg-[#fb7185]/5 rounded-full blur-3xl pointer-events-none" />
 
               <div className="space-y-6">
                 {/* Header info */}
                 <div className="flex items-center justify-between border-b border-white/5 pb-4">
                   <div>
-                    <span className="text-[9px] font-mono text-[#bfff00] uppercase tracking-widest font-bold">
+                    <span className="text-[9px] font-mono text-[#fb7185] uppercase tracking-widest font-bold">
                       Active Telemetry
                     </span>
                     <h3 className="text-2xl font-black text-white uppercase tracking-tight">
                       {selectedGuide.name} Strategy
                     </h3>
                   </div>
-                  <div className="h-10 w-10 bg-[#bfff00]/10 border border-[#bfff00]/25 rounded-xl flex items-center justify-center text-[#bfff00]">
+                  <div className="h-10 w-10 bg-[#fb7185]/10 border border-[#fb7185]/25 rounded-xl flex items-center justify-center text-[#fb7185]">
                     <span className="material-symbols-outlined">{selectedGuide.icon}</span>
                   </div>
                 </div>
@@ -154,7 +154,7 @@ export default function BiomechanicsGuide() {
                 {/* Target */}
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-xs font-mono text-white/60">
-                    <Award className="h-3.5 w-3.5 text-[#bfff00]" />
+                    <Award className="h-3.5 w-3.5 text-[#fb7185]" />
                     <span className="uppercase tracking-wider font-bold">Biomechanical Target</span>
                   </div>
                   <p className="text-sm font-semibold text-white pl-5">{selectedGuide.target}</p>
@@ -170,8 +170,8 @@ export default function BiomechanicsGuide() {
                 </div>
 
                 {/* Strategy */}
-                <div className="glass-card-lime rounded-xl p-5 border border-[#bfff00]/20 space-y-2">
-                  <div className="flex items-center gap-2 text-[10px] font-mono text-[#bfff00] font-bold uppercase tracking-wider">
+                <div className="glass-card-lime rounded-xl p-5 border border-[#fb7185]/20 space-y-2">
+                  <div className="flex items-center gap-2 text-[10px] font-mono text-[#fb7185] font-bold uppercase tracking-wider">
                     <Dumbbell className="h-3.5 w-3.5" />
                     Ishan's Biomechanical Cue
                   </div>
@@ -193,7 +193,7 @@ export default function BiomechanicsGuide() {
                 </div>
                 <button
                   onClick={handleScrollToInquiry}
-                  className="inline-flex items-center justify-center gap-1.5 bg-[#bfff00] text-black px-4 py-2.5 rounded-xl font-mono text-[10px] font-black uppercase tracking-wider hover:bg-white transition-colors cursor-pointer"
+                  className="inline-flex items-center justify-center gap-1.5 bg-[#fb7185] text-black px-4 py-2.5 rounded-xl font-mono text-[10px] font-black uppercase tracking-wider hover:bg-white transition-colors cursor-pointer"
                 >
                   Apply For Program
                   <ChevronRight className="h-3.5 w-3.5" />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../supabaseClient';
 import { Send, CheckCircle, ChevronDown } from 'lucide-react';
@@ -129,14 +129,14 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalo
 
   return (
     <div id="intake-portal" className="w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-10 relative overflow-hidden shadow-2xl">
-      <div className="absolute top-0 left-0 w-80 h-80 bg-lime-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-0 w-80 h-80 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-60 h-60 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
 
       <AnimatePresence mode="wait">
         {!succeeded ? (
           <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <div className="max-w-xl mx-auto text-center mb-8">
-              <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold bg-[#bfff00]/10 px-3 py-1 rounded-full border border-[#bfff00]/25">
+              <span className="text-[10px] font-mono tracking-widest text-[#fb7185] uppercase font-bold bg-[#fb7185]/10 px-3 py-1 rounded-full border border-[#fb7185]/25">
                 Apply for Elite 1-on-1 Coaching
               </span>
               <h3 className="text-3xl font-extrabold text-white mt-3 font-sans tracking-tight">
@@ -152,7 +152,7 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalo
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">
-                    First &amp; Last Name <span className="text-[#bfff00]">*</span>
+                    First &amp; Last Name <span className="text-[#fb7185]">*</span>
                   </label>
                   <input
                     type="text"
@@ -166,7 +166,7 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalo
                 </div>
                 <div>
                   <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">
-                    Email Address <span className="text-[#bfff00]">*</span>
+                    Email Address <span className="text-[#fb7185]">*</span>
                   </label>
                   <input
                     type="email"
@@ -184,7 +184,7 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalo
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">
-                    Phone / WhatsApp <span className="text-[#bfff00]">*</span>
+                    Phone / WhatsApp <span className="text-[#fb7185]">*</span>
                   </label>
                   <input
                     type="tel"
@@ -239,7 +239,7 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalo
                 <div>
                   <label className="block text-xs font-mono text-zinc-400 uppercase tracking-wider mb-2">
                     Calculated BMI
-                    <span className="ml-1.5 text-[9px] text-[#bfff00] normal-case font-sans">(auto-filled from BMI calculator)</span>
+                    <span className="ml-1.5 text-[9px] text-[#fb7185] normal-case font-sans">(auto-filled from BMI calculator)</span>
                   </label>
                   <input
                     type="text"
@@ -317,7 +317,7 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalo
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full cursor-pointer bg-[#bfff00] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 group mt-2 disabled:opacity-60"
+                className="w-full cursor-pointer bg-[#fb7185] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 group mt-2 disabled:opacity-60"
               >
                 {submitting ? (
                   <span>SUBMITTING APPLICATION...</span>
@@ -342,16 +342,16 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalo
             className="max-w-2xl mx-auto py-10 text-center relative"
           >
             <div className="inline-flex p-4 bg-lime-950/40 border border-lime-800/40 rounded-full mb-6">
-              <CheckCircle className="h-12 w-12 text-[#bfff00]" />
+              <CheckCircle className="h-12 w-12 text-[#fb7185]" />
             </div>
-            <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold bg-[#bfff00]/10 px-3 py-1 rounded-full border border-[#bfff00]/25">
+            <span className="text-[10px] font-mono tracking-widest text-[#fb7185] uppercase font-bold bg-[#fb7185]/10 px-3 py-1 rounded-full border border-[#fb7185]/25">
               Application Submitted
             </span>
             <h3 className="text-3xl font-extrabold text-white mt-4 mb-3 tracking-tight">
               WE'VE GOT YOU, {formData.name.split(' ')[0].toUpperCase()}.
             </h3>
             <p className="text-zinc-400 text-sm max-w-md mx-auto leading-relaxed mb-8">
-              Your application has been securely received. Ishan personally reviews every submission and will reach out via <span className="text-white font-semibold">WhatsApp or email</span> within <span className="text-[#bfff00] font-bold">24 hours</span>.
+              Your application has been securely received. Ishan personally reviews every submission and will reach out via <span className="text-white font-semibold">WhatsApp or email</span> within <span className="text-[#fb7185] font-bold">24 hours</span>.
             </p>
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-2xl p-5 text-left space-y-3 max-w-sm mx-auto">
               <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">Application Summary</p>
@@ -361,19 +361,19 @@ export default function InquiryForm({ prefilledGoal, prefilledBmi, prefilledCalo
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-zinc-500">Goal</span>
-                <span className="text-[#bfff00] font-semibold uppercase text-[10px] font-mono">
+                <span className="text-[#fb7185] font-semibold uppercase text-[10px] font-mono">
                   {GOAL_OPTIONS.find(g => g.value === formData.goal)?.label}
                 </span>
               </div>
               {formData.bmi && (
                 <div className="flex justify-between text-xs">
                   <span className="text-zinc-500">Calculated BMI</span>
-                  <span className="text-[#bfff00] font-mono font-semibold">{formData.bmi}</span>
+                  <span className="text-[#fb7185] font-mono font-semibold">{formData.bmi}</span>
                 </div>
               )}
               <div className="flex flex-col gap-1 border-t border-zinc-800/50 pt-2 text-xs">
                 <span className="text-zinc-500">Coaching Investment</span>
-                <span className="text-[#bfff00] font-mono text-[10px] uppercase font-bold text-wrap">
+                <span className="text-[#fb7185] font-mono text-[10px] uppercase font-bold text-wrap">
                   {INVESTMENT_OPTIONS.find(o => o.value === formData.coachingInvestment)?.label}
                 </span>
               </div>

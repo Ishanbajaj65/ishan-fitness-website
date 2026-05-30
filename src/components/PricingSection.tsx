@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Check, ArrowRight, MessageCircle, Zap, Dumbbell, Apple, DollarSign } from 'lucide-react';
@@ -97,7 +97,7 @@ export default function PricingSection({ onApply }: PricingSectionProps) {
         <h2 className="font-display text-4xl md:text-5xl font-black text-white tracking-[-0.03em] uppercase">
           Program Pricing
         </h2>
-        <p className="text-[#8d9479] text-sm leading-relaxed">
+        <p className="text-[#9ca3af] text-sm leading-relaxed">
           No hidden fees. No upsells. One price, one coach, one transformation. Spots are limited — Ishan works with a small roster to guarantee quality.
         </p>
       </div>
@@ -119,13 +119,13 @@ export default function PricingSection({ onApply }: PricingSectionProps) {
               className={`relative rounded-3xl p-7 md:p-8 flex flex-col justify-between transition-all duration-300 ${
                 tier.highlight
                   ? 'glass-card-lime glow-lime'
-                  : 'glass-card hover:border-[rgba(191,255,0,0.12)]'
+                  : 'glass-card hover:border-[rgba(225,29,72,0.12)]'
               }`}
               style={{ transform: isHovered ? 'translateY(-5px)' : 'translateY(0)' }}
             >
               {/* Badge */}
               {tier.badge && (
-                <div className="absolute top-0 right-7 -translate-y-1/2 bg-[#bfff00] text-black font-extrabold text-[9px] font-mono uppercase px-3 py-1.5 rounded-full tracking-widest shadow-lg">
+                <div className="absolute top-0 right-7 -translate-y-1/2 bg-[#fb7185] text-black font-extrabold text-[9px] font-mono uppercase px-3 py-1.5 rounded-full tracking-widest shadow-lg">
                   {tier.badge}
                 </div>
               )}
@@ -134,8 +134,8 @@ export default function PricingSection({ onApply }: PricingSectionProps) {
                 {/* Icon */}
                 <div className={`p-3 rounded-xl border w-fit ${
                   tier.highlight
-                    ? 'bg-[rgba(191,255,0,0.1)] border-[rgba(191,255,0,0.25)] text-[#bfff00]'
-                    : 'bg-[rgba(255,255,255,0.04)] border-white/10 text-[#8d9479]'
+                    ? 'bg-[rgba(225,29,72,0.1)] border-[rgba(225,29,72,0.25)] text-[#fb7185]'
+                    : 'bg-[rgba(255,255,255,0.04)] border-white/10 text-[#9ca3af]'
                 }`}>
                   {tier.icon}
                 </div>
@@ -143,7 +143,7 @@ export default function PricingSection({ onApply }: PricingSectionProps) {
                 {/* Name & Tagline */}
                 <div>
                   <h3 className="font-display text-xl font-black text-white tracking-tight uppercase">{tier.name}</h3>
-                  <p className={`text-xs font-mono mt-1.5 ${tier.highlight ? 'text-[#bfff00]' : 'text-[#8d9479]'}`}>
+                  <p className={`text-xs font-mono mt-1.5 ${tier.highlight ? 'text-[#fb7185]' : 'text-[#9ca3af]'}`}>
                     {tier.tagline}
                   </p>
                 </div>
@@ -151,13 +151,13 @@ export default function PricingSection({ onApply }: PricingSectionProps) {
                 {/* Price Display */}
                 <div className={`flex items-end gap-2 py-3.5 px-4 rounded-xl border ${
                   tier.highlight
-                    ? 'bg-[rgba(191,255,0,0.05)] border-[rgba(191,255,0,0.2)]'
+                    ? 'bg-[rgba(225,29,72,0.05)] border-[rgba(225,29,72,0.2)]'
                     : 'bg-[rgba(255,255,255,0.02)] border-white/8'
                 }`}>
                   <span className={`text-3xl font-black font-mono tracking-tight ${
-                    tier.highlight ? 'text-[#bfff00]' : 'text-white'
+                    tier.highlight ? 'text-[#fb7185]' : 'text-white'
                   }`}>{tier.price}</span>
-                  <span className="text-[#8d9479] text-sm mb-0.5 font-mono">{tier.priceNote}</span>
+                  <span className="text-[#9ca3af] text-sm mb-0.5 font-mono">{tier.priceNote}</span>
                 </div>
 
                 <div className="h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
@@ -165,9 +165,9 @@ export default function PricingSection({ onApply }: PricingSectionProps) {
                 {/* Features */}
                 <ul className="space-y-2.5">
                   {tier.features.map((feat, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-xs text-[#c3caac]">
+                    <li key={i} className="flex items-start gap-2.5 text-xs text-[#d1d5db]">
                       <Check className={`h-3.5 w-3.5 shrink-0 mt-0.5 stroke-[3] ${
-                        tier.highlight ? 'text-[#bfff00]' : 'text-emerald-400'
+                        tier.highlight ? 'text-[#fb7185]' : 'text-emerald-400'
                       }`} />
                       <span className="leading-normal">{feat}</span>
                     </li>
@@ -182,8 +182,8 @@ export default function PricingSection({ onApply }: PricingSectionProps) {
                   onClick={() => onApply(goalMap[tier.id])}
                   className={`w-full font-bold text-xs py-4 rounded-xl transition-all cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 border group ${
                     tier.highlight
-                      ? 'bg-[#bfff00] hover:bg-white text-black border-transparent glow-lime-sm'
-                      : 'bg-transparent hover:bg-[rgba(191,255,0,0.05)] text-[#c3caac] hover:text-[#bfff00] border-white/10 hover:border-[rgba(191,255,0,0.25)]'
+                      ? 'bg-[#fb7185] hover:bg-white text-black border-transparent glow-lime-sm'
+                      : 'bg-transparent hover:bg-[rgba(225,29,72,0.05)] text-[#d1d5db] hover:text-[#fb7185] border-white/10 hover:border-[rgba(225,29,72,0.25)]'
                   }`}
                 >
                   <span>{tier.cta}</span>
@@ -194,7 +194,7 @@ export default function PricingSection({ onApply }: PricingSectionProps) {
                   href="https://wa.me/917297946193?text=Hi%20Ishan%2C%20I'm%20interested%20in%20your%20coaching%20program."
                   target="_blank"
                   rel="noreferrer"
-                  className="w-full text-xs py-3 rounded-xl border border-white/8 hover:border-[rgba(191,255,0,0.2)] bg-transparent hover:bg-[rgba(0,0,0,0.3)] text-[#8d9479] hover:text-[#bfff00] transition-all flex items-center justify-center gap-2"
+                  className="w-full text-xs py-3 rounded-xl border border-white/8 hover:border-[rgba(225,29,72,0.2)] bg-transparent hover:bg-[rgba(0,0,0,0.3)] text-[#9ca3af] hover:text-[#fb7185] transition-all flex items-center justify-center gap-2"
                 >
                   <MessageCircle className="h-3.5 w-3.5 text-green-400" />
                   <span>Chat on WhatsApp First</span>
@@ -208,8 +208,8 @@ export default function PricingSection({ onApply }: PricingSectionProps) {
       {/* Trust note */}
       <div className="max-w-2xl mx-auto text-center">
         <div className="inline-flex items-center gap-3 glass-card rounded-2xl px-6 py-3.5">
-          <Check className="h-4 w-4 text-[#bfff00] stroke-[3] shrink-0" />
-          <p className="text-xs text-[#8d9479]">
+          <Check className="h-4 w-4 text-[#fb7185] stroke-[3] shrink-0" />
+          <p className="text-xs text-[#9ca3af]">
             <span className="text-white font-semibold">100% Satisfaction Commitment.</span> If you're not seeing results by week 4, Ishan restructures your protocol at no extra cost.
           </p>
         </div>

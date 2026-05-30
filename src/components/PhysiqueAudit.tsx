@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ClipboardCheck, Sparkles, RefreshCw, ChevronRight, Check } from 'lucide-react';
 
@@ -80,11 +80,11 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
 
   return (
     <div id="physique-audit" className="w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 md:p-10 relative overflow-hidden shadow-2xl text-left">
-      <div className="absolute top-0 right-0 w-80 h-80 bg-lime-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-80 h-80 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header */}
       <div className="max-w-xl mx-auto text-center mb-8">
-        <span className="text-[10px] font-mono tracking-widest text-[#bfff00] uppercase font-bold bg-[#bfff00]/10 px-3 py-1 rounded-full border border-[#bfff00]/25 inline-flex items-center gap-1.5 mb-3">
+        <span className="text-[10px] font-mono tracking-widest text-[#fb7185] uppercase font-bold bg-[#fb7185]/10 px-3 py-1 rounded-full border border-[#fb7185]/25 inline-flex items-center gap-1.5 mb-3">
           <Sparkles className="h-3 w-3" />
           Bespoke Physique Audit
         </span>
@@ -108,7 +108,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
               className="space-y-6"
             >
               <div className="border-b border-white/5 pb-2">
-                <span className="text-xs font-mono text-[#bfff00] font-bold">STEP 01 OF 03</span>
+                <span className="text-xs font-mono text-[#fb7185] font-bold">STEP 01 OF 03</span>
                 <h4 className="text-lg font-bold text-white uppercase mt-1">Core Telemetry & Age Framework</h4>
               </div>
 
@@ -123,7 +123,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
                         type="button"
                         className={`py-3 rounded-xl border text-center font-mono text-xs uppercase tracking-wider cursor-pointer transition-all ${
                           gender === g
-                            ? 'bg-[#bfff00] text-black border-[#bfff00] font-bold shadow-[0_0_10px_rgba(191,255,0,0.15)]'
+                            ? 'bg-[#fb7185] text-black border-[#fb7185] font-bold shadow-[0_0_10px_rgba(225,29,72,0.15)]'
                             : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
                         }`}
                       >
@@ -147,7 +147,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
                         type="button"
                         className={`py-3 rounded-xl border text-center font-mono text-xs uppercase tracking-wider cursor-pointer transition-all ${
                           age === a.val
-                            ? 'bg-[#bfff00] text-black border-[#bfff00] font-bold shadow-[0_0_10px_rgba(191,255,0,0.15)]'
+                            ? 'bg-[#fb7185] text-black border-[#fb7185] font-bold shadow-[0_0_10px_rgba(225,29,72,0.15)]'
                             : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
                         }`}
                       >
@@ -170,7 +170,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
               className="space-y-6"
             >
               <div className="border-b border-white/5 pb-2">
-                <span className="text-xs font-mono text-[#bfff00] font-bold">STEP 02 OF 03</span>
+                <span className="text-xs font-mono text-[#fb7185] font-bold">STEP 02 OF 03</span>
                 <h4 className="text-lg font-bold text-white uppercase mt-1">What is your primary physical obstacle?</h4>
               </div>
 
@@ -182,13 +182,13 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
                     type="button"
                     className={`p-4 rounded-xl border text-left cursor-pointer transition-all flex items-center justify-between ${
                       obstacle === opt.value
-                        ? 'bg-[#bfff00]/5 border-[#bfff00] text-[#bfff00] font-semibold'
+                        ? 'bg-[#fb7185]/5 border-[#fb7185] text-[#fb7185] font-semibold'
                         : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
                     }`}
                   >
                     <span className="text-xs font-mono pr-4 leading-normal">{opt.label}</span>
                     <div className={`h-4 w-4 rounded-full border shrink-0 flex items-center justify-center ${
-                      obstacle === opt.value ? 'border-[#bfff00] bg-[#bfff00]' : 'border-zinc-700'
+                      obstacle === opt.value ? 'border-[#fb7185] bg-[#fb7185]' : 'border-zinc-700'
                     }`}>
                       {obstacle === opt.value && <Check className="h-2.5 w-2.5 text-black stroke-[4]" />}
                     </div>
@@ -208,7 +208,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
               className="space-y-6"
             >
               <div className="border-b border-white/5 pb-2">
-                <span className="text-xs font-mono text-[#bfff00] font-bold">STEP 03 OF 03</span>
+                <span className="text-xs font-mono text-[#fb7185] font-bold">STEP 03 OF 03</span>
                 <h4 className="text-lg font-bold text-white uppercase mt-1">Lifestyle & Daily Telemetry</h4>
               </div>
 
@@ -227,7 +227,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
                         type="button"
                         className={`py-3 rounded-xl border text-center font-mono text-xs uppercase tracking-wider cursor-pointer transition-all ${
                           sleep === s.val
-                            ? 'bg-[#bfff00] text-black border-[#bfff00] font-bold shadow-[0_0_10px_rgba(191,255,0,0.15)]'
+                            ? 'bg-[#fb7185] text-black border-[#fb7185] font-bold shadow-[0_0_10px_rgba(225,29,72,0.15)]'
                             : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
                         }`}
                       >
@@ -251,7 +251,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
                         type="button"
                         className={`py-3 rounded-xl border text-center font-mono text-xs uppercase tracking-wider cursor-pointer transition-all ${
                           workoutDays === w.val
-                            ? 'bg-[#bfff00] text-black border-[#bfff00] font-bold shadow-[0_0_10px_rgba(191,255,0,0.15)]'
+                            ? 'bg-[#fb7185] text-black border-[#fb7185] font-bold shadow-[0_0_10px_rgba(225,29,72,0.15)]'
                             : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
                         }`}
                       >
@@ -274,12 +274,12 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
             >
               <div className="border-b border-white/5 pb-2 flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-mono text-[#bfff00] font-bold">AUDIT REPORT CALCULATED</span>
+                  <span className="text-xs font-mono text-[#fb7185] font-bold">AUDIT REPORT CALCULATED</span>
                   <h4 className="text-lg font-bold text-white uppercase mt-1">Your Physique Gap Analysis</h4>
                 </div>
                 <button
                   onClick={resetAudit}
-                  className="flex items-center gap-1 text-[10px] font-mono text-zinc-500 hover:text-[#bfff00] transition-colors uppercase border border-zinc-800 hover:border-[#bfff00]/30 rounded-lg px-2 py-1 cursor-pointer"
+                  className="flex items-center gap-1 text-[10px] font-mono text-zinc-500 hover:text-[#fb7185] transition-colors uppercase border border-zinc-800 hover:border-[#fb7185]/30 rounded-lg px-2 py-1 cursor-pointer"
                 >
                   <RefreshCw className="h-3 w-3" />
                   Restart
@@ -287,9 +287,9 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
               </div>
 
               {/* Physique Gap Card */}
-              <div className="glass-card-active rounded-2xl p-6 border border-[#bfff00] bg-[#bfff00]/5 space-y-4">
+              <div className="glass-card-active rounded-2xl p-6 border border-[#fb7185] bg-[#fb7185]/5 space-y-4">
                 <div>
-                  <span className="text-[9px] font-mono text-[#bfff00] uppercase font-bold tracking-widest block mb-0.5">Identified Gap</span>
+                  <span className="text-[9px] font-mono text-[#fb7185] uppercase font-bold tracking-widest block mb-0.5">Identified Gap</span>
                   <h5 className="text-lg font-black text-white uppercase tracking-tight leading-tight">
                     {getPhysiqueGap().title}
                   </h5>
@@ -299,8 +299,8 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
                   {getPhysiqueGap().description}
                 </p>
 
-                <div className="bg-black/35 rounded-xl p-4 border border-[#bfff00]/15 space-y-1">
-                  <span className="text-[9px] font-mono text-[#bfff00] uppercase tracking-wider font-bold block">
+                <div className="bg-black/35 rounded-xl p-4 border border-[#fb7185]/15 space-y-1">
+                  <span className="text-[9px] font-mono text-[#fb7185] uppercase tracking-wider font-bold block">
                     Strategic Action Plan
                   </span>
                   <p className="text-xs text-white/95 leading-relaxed font-sans font-medium">
@@ -311,7 +311,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
 
               <button
                 onClick={handleApply}
-                className="w-full bg-[#bfff00] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 mt-4 cursor-pointer"
+                className="w-full bg-[#fb7185] hover:bg-white text-black font-extrabold text-sm py-4 rounded-xl shadow-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 mt-4 cursor-pointer"
               >
                 🚀 Apply Audit results to Enrollment Form
               </button>
@@ -337,7 +337,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
                 <div
                   key={s}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
-                    step === s ? 'w-6 bg-[#bfff00]' : 'w-1.5 bg-zinc-800'
+                    step === s ? 'w-6 bg-[#fb7185]' : 'w-1.5 bg-zinc-800'
                   }`}
                 />
               ))}
@@ -345,7 +345,7 @@ export default function PhysiqueAudit({ onApplyAudit }: PhysiqueAuditProps) {
 
             <button
               onClick={handleNextStep}
-              className="inline-flex items-center gap-1.5 bg-[#bfff00] text-black px-5 py-3 rounded-xl font-mono text-xs font-black uppercase tracking-wider hover:bg-white transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 bg-[#fb7185] text-black px-5 py-3 rounded-xl font-mono text-xs font-black uppercase tracking-wider hover:bg-white transition-colors cursor-pointer"
               type="button"
             >
               {step === 3 ? 'Calculate Report' : 'Next Step'}

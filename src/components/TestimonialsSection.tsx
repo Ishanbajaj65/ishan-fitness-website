@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+﻿import { motion } from 'motion/react';
 import { Star, Quote, TrendingUp } from 'lucide-react';
 
 const TESTIMONIALS = [
@@ -49,7 +49,7 @@ export default function TestimonialsSection() {
         <h2 className="font-display text-4xl md:text-5xl font-black text-white tracking-[-0.03em] uppercase">
           Real Transformations
         </h2>
-        <p className="text-[#8d9479] text-sm leading-relaxed">
+        <p className="text-[#9ca3af] text-sm leading-relaxed">
           Not influencer selfies. These are verified client outcomes from individuals who committed to the science.
         </p>
       </div>
@@ -66,43 +66,43 @@ export default function TestimonialsSection() {
             className="glass-card-lime rounded-3xl p-7 flex flex-col justify-between hover-float group"
           >
             {/* Quote icon */}
-            <Quote className="absolute top-5 right-5 h-5 w-5 text-[rgba(191,255,0,0.15)] group-hover:text-[rgba(191,255,0,0.3)] transition-colors" />
+            <Quote className="absolute top-5 right-5 h-5 w-5 text-[rgba(225,29,72,0.15)] group-hover:text-[rgba(225,29,72,0.3)] transition-colors" />
 
             <div className="space-y-5">
               {/* Stars */}
               <div className="flex gap-1">
                 {Array.from({ length: t.rating }).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 text-[#bfff00] fill-[#bfff00]" />
+                  <Star key={i} className="h-3.5 w-3.5 text-[#fb7185] fill-[#fb7185]" />
                 ))}
               </div>
 
               {/* Quote */}
-              <p className="text-[#c3caac] text-sm leading-relaxed">"{t.quote}"</p>
+              <p className="text-[#d1d5db] text-sm leading-relaxed">"{t.quote}"</p>
 
               {/* Before → After */}
-              <div className="flex items-center gap-3 bg-[rgba(0,0,0,0.3)] border border-[rgba(191,255,0,0.1)] rounded-xl p-3">
+              <div className="flex items-center gap-3 bg-[rgba(0,0,0,0.3)] border border-[rgba(225,29,72,0.1)] rounded-xl p-3">
                 <div className="text-center flex-1">
-                  <span className="text-[9px] font-mono text-[#8d9479] uppercase tracking-widest block mb-1">Before</span>
-                  <span className="text-sm font-bold font-mono text-[#8d9479]">{t.before}</span>
+                  <span className="text-[9px] font-mono text-[#9ca3af] uppercase tracking-widest block mb-1">Before</span>
+                  <span className="text-sm font-bold font-mono text-[#9ca3af]">{t.before}</span>
                 </div>
-                <div className="h-px flex-1 bg-gradient-to-r from-[rgba(255,255,255,0.1)] via-[#bfff00] to-[rgba(255,255,255,0.1)]" />
+                <div className="h-px flex-1 bg-gradient-to-r from-[rgba(255,255,255,0.1)] via-[#fb7185] to-[rgba(255,255,255,0.1)]" />
                 <div className="text-center flex-1">
-                  <span className="text-[9px] font-mono text-[#8d9479] uppercase tracking-widest block mb-1">After</span>
-                  <span className="text-sm font-bold font-mono text-[#bfff00]">{t.after}</span>
+                  <span className="text-[9px] font-mono text-[#9ca3af] uppercase tracking-widest block mb-1">After</span>
+                  <span className="text-sm font-bold font-mono text-[#fb7185]">{t.after}</span>
                 </div>
               </div>
             </div>
 
             {/* Client Info */}
-            <div className="mt-6 pt-5 border-t border-[rgba(191,255,0,0.1)] flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full bg-[rgba(191,255,0,0.1)] border border-[rgba(191,255,0,0.25)] flex items-center justify-center font-black text-[#bfff00] text-sm font-mono">
+            <div className="mt-6 pt-5 border-t border-[rgba(225,29,72,0.1)] flex items-center gap-3">
+              <div className="h-9 w-9 rounded-full bg-[rgba(225,29,72,0.1)] border border-[rgba(225,29,72,0.25)] flex items-center justify-center font-black text-[#fb7185] text-sm font-mono">
                 {t.avatar}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-white">{t.name}</p>
-                <p className="text-[10px] text-[#8d9479] truncate">{t.role}</p>
+                <p className="text-[10px] text-[#9ca3af] truncate">{t.role}</p>
               </div>
-              <span className="text-[10px] font-mono font-bold text-[#bfff00] bg-[rgba(191,255,0,0.06)] border border-[rgba(191,255,0,0.15)] px-2.5 py-1 rounded-full shrink-0">
+              <span className="text-[10px] font-mono font-bold text-[#fb7185] bg-[rgba(225,29,72,0.06)] border border-[rgba(225,29,72,0.15)] px-2.5 py-1 rounded-full shrink-0">
                 {t.result}
               </span>
             </div>

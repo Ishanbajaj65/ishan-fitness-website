@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { RefreshCw } from 'lucide-react';
 
@@ -94,11 +94,11 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
 
   return (
     <div id="calibrator" className="glass-card rounded-xl p-8 md:p-12 relative overflow-hidden border border-white/5 text-left">
-      <div className="absolute left-0 bottom-0 w-full h-1/2 bg-[#b8f600]/5 blur-3xl -z-10" />
+      <div className="absolute left-0 bottom-0 w-full h-1/2 bg-[#e11d48]/5 blur-3xl -z-10" />
       
       <div className="text-center mb-12">
         <h2 className="font-display text-4xl md:text-5xl text-white uppercase mb-4 font-black tracking-tight">
-          BMI <span className="text-[#b8f600]">CALIBRATOR</span>
+          BMI <span className="text-[#e11d48]">CALIBRATOR</span>
         </h2>
         <p className="font-mono text-xs text-on-surface/70 uppercase tracking-widest">
           Input telemetry to analyze your current body mass index and estimated targets.
@@ -108,7 +108,7 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
       <form className="max-w-2xl mx-auto space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="flex flex-col">
-            <label className="font-mono text-xs text-[#b8f600] uppercase mb-2">
+            <label className="font-mono text-xs text-[#e11d48] uppercase mb-2">
               Bodyweight (KG)
             </label>
             <input
@@ -121,7 +121,7 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
             />
           </div>
           <div className="flex flex-col">
-            <label className="font-mono text-xs text-[#b8f600] uppercase mb-2">
+            <label className="font-mono text-xs text-[#e11d48] uppercase mb-2">
               Height (CM)
             </label>
             <input
@@ -165,18 +165,18 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
             className="max-w-2xl mx-auto mt-12 pt-8 border-t border-white/5 space-y-6"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="glass-card-active p-4 rounded-xl border border-[#b8f600] bg-[#b8f600]/5 flex flex-col justify-center">
-                <p className="text-[10px] font-mono text-[#b8f600] uppercase mb-1">Calculated BMI</p>
+              <div className="glass-card-active p-4 rounded-xl border border-[#e11d48] bg-[#e11d48]/5 flex flex-col justify-center">
+                <p className="text-[10px] font-mono text-[#e11d48] uppercase mb-1">Calculated BMI</p>
                 <p className="text-3xl font-black font-mono text-white">{result.bmi}</p>
               </div>
               <div className="glass-card p-4 rounded-xl border border-white/5 flex flex-col justify-center">
                 <p className="text-[10px] font-mono text-on-surface/50 uppercase mb-1">Mass Classification</p>
-                <p className="text-sm font-black text-[#b8f600] uppercase tracking-wide">{result.category}</p>
+                <p className="text-sm font-black text-[#e11d48] uppercase tracking-wide">{result.category}</p>
               </div>
             </div>
 
-            <div className="glass-card-lime rounded-xl p-5 border border-[#b8f600]/20">
-              <span className="text-[9px] font-mono font-bold tracking-widest text-[#b8f600] uppercase block mb-1">
+            <div className="glass-card-lime rounded-xl p-5 border border-[#e11d48]/20">
+              <span className="text-[9px] font-mono font-bold tracking-widest text-[#e11d48] uppercase block mb-1">
                 Evidence-Based Physical Action
               </span>
               <p className="text-xs text-on-surface/80 leading-relaxed font-sans">
@@ -185,9 +185,9 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
             </div>
 
             {/* Dynamic Calorie & Protein Estimator Control Panel */}
-            <div className="glass-card-lime rounded-xl p-5 border border-[#b8f600]/20 space-y-6">
+            <div className="glass-card-lime rounded-xl p-5 border border-[#e11d48]/20 space-y-6">
               <div>
-                <span className="text-[10px] font-mono font-bold tracking-widest text-[#b8f600] uppercase block mb-3">
+                <span className="text-[10px] font-mono font-bold tracking-widest text-[#e11d48] uppercase block mb-3">
                   1. select weekly activity level
                 </span>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -203,7 +203,7 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
                       type="button"
                       className={`px-3 py-2 rounded-lg text-left border transition-all cursor-pointer ${
                         activityLevel === act.val
-                          ? 'bg-[#b8f600] text-black border-[#b8f600]'
+                          ? 'bg-[#e11d48] text-black border-[#e11d48]'
                           : 'bg-black/40 border-white/5 text-white/60 hover:text-white hover:border-white/10'
                       }`}
                     >
@@ -215,7 +215,7 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
               </div>
 
               <div>
-                <span className="text-[10px] font-mono font-bold tracking-widest text-[#b8f600] uppercase block mb-3">
+                <span className="text-[10px] font-mono font-bold tracking-widest text-[#e11d48] uppercase block mb-3">
                   2. select primary target goal
                 </span>
                 <div className="grid grid-cols-3 gap-2">
@@ -230,7 +230,7 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
                       type="button"
                       className={`px-3 py-3 rounded-lg text-center border transition-all cursor-pointer flex flex-col items-center justify-center gap-1 ${
                         fitnessGoal === goal.val
-                          ? 'bg-[#b8f600] text-black border-[#b8f600]'
+                          ? 'bg-[#e11d48] text-black border-[#e11d48]'
                           : 'bg-black/40 border-white/5 text-white/60 hover:text-white hover:border-white/10'
                       }`}
                     >
@@ -243,14 +243,14 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
 
               {/* Targets Output Display */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/5">
-                <div className="glass-card-active p-4 rounded-xl border border-[#b8f600]/30 bg-black/40 flex flex-col justify-center">
-                  <p className="text-[9px] font-mono text-[#b8f600] uppercase mb-1">Target Intake Goal</p>
+                <div className="glass-card-active p-4 rounded-xl border border-[#e11d48]/30 bg-black/40 flex flex-col justify-center">
+                  <p className="text-[9px] font-mono text-[#e11d48] uppercase mb-1">Target Intake Goal</p>
                   <p className="text-2xl font-black font-mono text-white">
                     {getEstimatedTargets().calories} <span className="text-xs font-mono font-normal text-on-surface/60">kcal/day</span>
                   </p>
                 </div>
-                <div className="glass-card-active p-4 rounded-xl border border-[#b8f600]/30 bg-black/40 flex flex-col justify-center">
-                  <p className="text-[9px] font-mono text-[#b8f600] uppercase mb-1">Target Protein Intake</p>
+                <div className="glass-card-active p-4 rounded-xl border border-[#e11d48]/30 bg-black/40 flex flex-col justify-center">
+                  <p className="text-[9px] font-mono text-[#e11d48] uppercase mb-1">Target Protein Intake</p>
                   <p className="text-2xl font-black font-mono text-white">
                     {getEstimatedTargets().protein} <span className="text-xs font-mono font-normal text-on-surface/60">g/day</span>
                   </p>
@@ -260,7 +260,7 @@ export default function BmiCalculator({ onApplyBmi }: BmiCalculatorProps) {
 
             <button
               onClick={handleApply}
-              className="w-full glass-card hover:border-[#b8f600] hover:text-[#b8f600] text-white font-bold text-xs py-3 rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 mt-4 cursor-pointer"
+              className="w-full glass-card hover:border-[#e11d48] hover:text-[#e11d48] text-white font-bold text-xs py-3 rounded-xl transition-all uppercase tracking-wider flex items-center justify-center gap-2 mt-4 cursor-pointer"
               type="button"
             >
               🚀 Apply calculated BMI & nutrition to intake form

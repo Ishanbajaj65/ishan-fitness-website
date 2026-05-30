@@ -1,0 +1,2 @@
+vercel env add VITE_SUPABASE_URL production <<< "https://lptbsaflxxyeyolfhxhy.supabase.co"
+vercel env add VITE_SUPABASE_ANON_KEY production <<< "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwdGJzYWZseHh5ZXlvbGZoeGh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1MzI4ODIsImV4cCI6MjA5NTEwODg4Mn0.xGcDpizEzFWNxn3U0gejC-kBHVot6B9GoINhyDPwje0"

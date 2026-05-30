@@ -9,12 +9,20 @@ import PricingSection from './components/PricingSection';
 import TestimonialsSection from './components/TestimonialsSection';
 import BiomechanicsGuide from './components/BiomechanicsGuide';
 import PhysiqueAudit from './components/PhysiqueAudit';
+import AnnouncementBar from './components/AnnouncementBar';
+import StatsCounter from './components/StatsCounter';
+import TransformationGallery from './components/TransformationGallery';
+import TDEECalculator from './components/TDEECalculator';
+import LeadMagnet from './components/LeadMagnet';
+import BlogTips from './components/BlogTips';
+import BookingCalendar from './components/BookingCalendar';
 import { HERO_COPY, ABOUT_COPY } from './fitnessData';
 
 export default function App() {
   const [prefilledGoal, setPrefilledGoal] = useState<string | undefined>(undefined);
   const [prefilledBmi, setPrefilledBmi] = useState<string | undefined>(undefined);
   const [prefilledCalories, setPrefilledCalories] = useState<number | undefined>(undefined);
+  const [prefilledTdee, setPrefilledTdee] = useState<number | undefined>(undefined);
   const [prefilledAudit, setPrefilledAudit] = useState<string | undefined>(undefined);
   const [whatsAppOpen, setWhatsAppOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -40,6 +48,14 @@ export default function App() {
     }, 100);
   };
 
+  const handleApplyTdee = (calories: number) => {
+    setPrefilledTdee(calories);
+    setPrefilledCalories(calories);
+    setTimeout(() => {
+      document.getElementById('intake-portal')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   const handleApplyAudit = (auditSummary: string, goal: string) => {
     setPrefilledAudit(auditSummary);
     setPrefilledGoal(goal);
@@ -58,33 +74,38 @@ export default function App() {
   const navLinks = [
     { href: '#philosophy', label: 'Philosophy' },
     { href: '#testimonials-section', label: 'Results' },
-    { href: '#biomechanics-guide', label: 'Form Guide' },
+    { href: '#transformations', label: 'Transformations' },
     { href: '#blueprints', label: 'Blueprints' },
     { href: '#pricing-section', label: 'Pricing' },
-    { href: '#calibrator', label: 'BMI Calibrator' },
-    { href: '#audit-portal', label: 'Audit' },
+    { href: '#book-call', label: 'Book Call' },
+    { href: '#tdee-calculator', label: 'TDEE' },
+    { href: '#free-plan', label: 'Free Plan' },
+    { href: '#coaching-intel', label: 'Tips' },
     { href: '#faq-section', label: 'FAQs' },
   ];
 
   return (
     <div className="min-h-screen text-[#e5e2e1] bg-[#030303] bg-grid-blueprint antialiased flex flex-col relative overflow-x-hidden">
+      {/* ── ANNOUNCEMENT BAR ── */}
+      <AnnouncementBar />
+
       {/* ── HEADER ── */}
       <header className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-surface-dim/80 backdrop-blur-xl border-b border-white/5 shadow-[0_0_30px_rgba(184,246,0,0.05)]'
+          ?         'bg-[#111111]/80 backdrop-blur-xl border-b border-white/5 shadow-[0_0_30px_rgba(225,29,72,0.06)]'
           : 'bg-transparent border-b border-transparent'
       }`}>
         <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-6 max-w-container-max mx-auto">
           {/* Logo */}
           <a href="#" className="flex items-center gap-3.5 group">
-            <div className="h-10 w-10 bg-[#b8f600] rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(184,246,0,0.3)] transition-all group-hover:scale-105">
+            <div className="h-10 w-10 bg-[#e11d48] rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(225,29,72,0.4)] transition-all group-hover:scale-105">
               <span className="material-symbols-outlined text-black font-bold">fitness_center</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-headline-lg-mobile md:font-headline-lg text-[#b8f600] tracking-tighter uppercase text-xl md:text-2xl font-black">
+              <span className="font-headline-lg-mobile md:font-headline-lg text-[#e11d48] tracking-tighter uppercase text-xl md:text-2xl font-black">
                 IB.COACH
               </span>
-              <span className="text-[9px] font-mono text-[#8d9479] uppercase tracking-widest -mt-1">Physique Strategist</span>
+              <span className="text-[9px] font-mono text-[#9ca3af] uppercase tracking-widest -mt-1">Physique Strategist</span>
             </div>
           </a>
 
@@ -94,7 +115,7 @@ export default function App() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-on-surface/70 font-label-sm hover:text-primary-fixed transition-colors font-mono tracking-widest text-[11px] uppercase"
+                className="text-on-surface/70 font-label-sm hover:text-[#fb7185] transition-colors font-mono tracking-widest text-[11px] uppercase"
               >
                 {link.label}
               </a>
@@ -111,7 +132,7 @@ export default function App() {
             </button>
             {/* Mobile menu toggle */}
             <button
-              className="md:hidden text-[#b8f600] p-1"
+              className="md:hidden text-[#e11d48] p-1"
               onClick={() => setMobileNavOpen(!mobileNavOpen)}
               aria-label="Toggle navigation"
             >
@@ -136,7 +157,7 @@ export default function App() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setMobileNavOpen(false)}
-                    className="block text-xs font-mono text-on-surface/80 hover:text-[#b8f600] uppercase tracking-widest transition-colors"
+                    className="block text-xs font-mono text-on-surface/80 hover:text-[#e11d48] uppercase tracking-widest transition-colors"
                   >
                     {link.label}
                   </a>
@@ -160,7 +181,9 @@ export default function App() {
           id="hero"
           className="relative w-full min-h-[90vh] flex flex-col justify-center items-start px-margin-mobile md:px-margin-desktop py-20 bg-cover bg-center"
           style={{
-            backgroundImage: "linear-gradient(rgba(3, 3, 3, 0.75), rgba(3, 3, 3, 0.95)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuC_rLbOvmnpv8V1LkODERzNnwNF77kqEOVBA3GEFrGSydTAphuH3zorxk_wKp5TgaxiaIxWdxiWjJt6bv8rW-YNz3Ot62UbXFllF1edM4TehxPwbxR6dQ_8NsqjKkjbBSh6bhSyKeVzFPZ9kQPBrmNclgYUUc4gvgOvfD5KK-Pror7PUHuLmpWInq2m5GzcUGwu6zy6bLcaYmoa_pdgLGHQs35naDldO2BtEEJw2FcyQyr6noHhawY9L8JkYAsUFRnMgBY4shVuFkY')"
+            backgroundImage: "linear-gradient(135deg, rgba(5,5,5,0.88) 0%, rgba(20,5,8,0.82) 60%, rgba(5,5,5,0.95) 100%), url('/hero_bg_red.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
           }}
         >
           <div className="max-w-container-max mx-auto w-full z-10 text-left">
@@ -172,7 +195,7 @@ export default function App() {
                 transition={{ duration: 0.6 }}
                 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-black text-white leading-[0.9] tracking-[-0.04em] uppercase"
               >
-                YOUR PHYSIQUE IS A <span className="text-[#b8f600] neon-text">SCIENCE</span>.
+                YOUR PHYSIQUE IS A <span className="text-[#e11d48] neon-text">SCIENCE</span>.
                 <br />
                 STOP GUESSING.
               </motion.h1>
@@ -185,25 +208,25 @@ export default function App() {
                 className="flex flex-wrap gap-6 text-left"
               >
                 <div className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[#b8f600] text-xl">verified</span>
+                  <span className="material-symbols-outlined text-[#e11d48] text-xl">verified</span>
                   <span className="font-label-sm text-xs text-on-surface uppercase font-mono tracking-wider">
                     8+ Years Coaching
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[#b8f600] text-xl">groups</span>
+                  <span className="material-symbols-outlined text-[#e11d48] text-xl">groups</span>
                   <span className="font-label-sm text-xs text-on-surface uppercase font-mono tracking-wider">
                     200+ Clients Transformed
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[#b8f600] text-xl">target</span>
+                  <span className="material-symbols-outlined text-[#e11d48] text-xl">target</span>
                   <span className="font-label-sm text-xs text-on-surface uppercase font-mono tracking-wider">
                     94% Goal Achievement
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-[#b8f600] text-xl">percent</span>
+                  <span className="material-symbols-outlined text-[#e11d48] text-xl">percent</span>
                   <span className="font-label-sm text-xs text-on-surface uppercase font-mono tracking-wider">
                     Single-Digit BF%
                   </span>
@@ -235,12 +258,15 @@ export default function App() {
           </div>
         </section>
 
+        {/* ── 1.5 STATS COUNTER ── */}
+        <StatsCounter />
+
         {/* ── 2. ABOUT SECTION (PHILOSOPHY) ── */}
         <section className="px-margin-mobile md:px-margin-desktop py-24 max-w-container-max mx-auto" id="philosophy">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center text-left">
             <div className="glass-card rounded-xl p-8 relative overflow-hidden">
               <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary-fixed/5 rounded-full blur-3xl" />
-              <h2 className="font-display text-4xl md:text-5xl text-[#b8f600] uppercase mb-6 font-black tracking-tight">
+              <h2 className="font-display text-4xl md:text-5xl text-[#e11d48] uppercase mb-6 font-black tracking-tight">
                 MEET ISHAN
               </h2>
               <p className="font-body-md text-base text-on-surface/80 leading-relaxed mb-6">
@@ -248,19 +274,19 @@ export default function App() {
               </p>
               <ul className="space-y-4 font-label-sm text-xs font-mono tracking-wider text-on-surface">
                 <li className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-[#b8f600]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  <span className="material-symbols-outlined text-[#e11d48]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     check_circle
                   </span>
                   Advanced Hypertrophy Specialist
                 </li>
                 <li className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-[#b8f600]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  <span className="material-symbols-outlined text-[#e11d48]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     check_circle
                   </span>
                   Evidence-Based Nutrition Programming
                 </li>
                 <li className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-[#b8f600]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  <span className="material-symbols-outlined text-[#e11d48]" style={{ fontVariationSettings: "'FILL' 1" }}>
                     check_circle
                   </span>
                   Biomechanical Movement Analysis
@@ -283,7 +309,12 @@ export default function App() {
           <TestimonialsSection />
         </section>
 
-        {/* ── 3.5 BIOMECHANICS FORM GUIDE ── */}
+        {/* ── 3.5 TRANSFORMATION GALLERY ── */}
+        <section className="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+          <TransformationGallery />
+        </section>
+
+        {/* ── 3.6 BIOMECHANICS FORM GUIDE ── */}
         <section className="px-margin-mobile md:px-margin-desktop py-24 border-t border-white/5 max-w-container-max mx-auto">
           <BiomechanicsGuide />
         </section>
@@ -300,24 +331,44 @@ export default function App() {
           <PricingSection onApply={handleSelectPackage} />
         </section>
 
+        {/* ── 5.5 BOOKING CALENDAR ── */}
+        <section className="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+          <BookingCalendar />
+        </section>
+
         {/* ── 6. CALIBRATOR / BMI CALCULATOR SECTION ── */}
         <section className="px-margin-mobile md:px-margin-desktop py-24 max-w-container-max mx-auto border-t border-white/5" id="calibrator">
           <BmiCalculator onApplyBmi={handleApplyBmi} />
         </section>
 
-        {/* ── 6.5 PHYSIQUE AUDIT DIAGNOSTIC ── */}
+        {/* ── 6.5 TDEE CALCULATOR ── */}
+        <section className="max-w-container-max mx-auto">
+          <TDEECalculator onApplyTDEE={handleApplyTdee} />
+        </section>
+
+        {/* ── 6.6 PHYSIQUE AUDIT DIAGNOSTIC ── */}
         <section id="audit-portal" className="px-margin-mobile md:px-margin-desktop py-24 border-t border-white/5 max-w-4xl mx-auto">
           <PhysiqueAudit onApplyAudit={handleApplyAudit} />
         </section>
 
+        {/* ── 6.7 FREE LEAD MAGNET ── */}
+        <section className="max-w-container-max mx-auto">
+          <LeadMagnet />
+        </section>
+
         {/* ── 7. INQUIRY PORTAL ── */}
         <section id="intake-portal" className="px-margin-mobile md:px-margin-desktop py-24 max-w-4xl mx-auto">
-          <InquiryForm prefilledGoal={prefilledGoal} prefilledBmi={prefilledBmi} prefilledCalories={prefilledCalories} prefilledAudit={prefilledAudit} />
+          <InquiryForm prefilledGoal={prefilledGoal} prefilledBmi={prefilledBmi} prefilledCalories={prefilledCalories ?? prefilledTdee} prefilledAudit={prefilledAudit} />
         </section>
 
         {/* ── 8. FAQS SECTION ── */}
         <section id="faq-section" className="px-margin-mobile md:px-margin-desktop py-24 max-w-container-max mx-auto border-t border-white/5">
           <FAQSection />
+        </section>
+
+        {/* ── 9. BLOG / COACHING TIPS ── */}
+        <section className="max-w-container-max mx-auto">
+          <BlogTips />
         </section>
       </main>
 
@@ -338,7 +389,7 @@ export default function App() {
           <div className="flex flex-col md:items-end justify-between gap-6">
             <div className="flex flex-wrap gap-6 font-mono text-xs text-on-surface/50">
               {navLinks.map(link => (
-                <a key={link.href} href={link.href} className="hover:text-[#b8f600] transition-colors uppercase">
+                <a key={link.href} href={link.href} className="hover:text-[#e11d48] transition-colors uppercase">
                   {link.label}
                 </a>
               ))}
@@ -348,7 +399,7 @@ export default function App() {
                 href="https://www.instagram.com/ishan_bajaj04/"
                 target="_blank"
                 rel="noreferrer"
-                className="text-on-surface/50 hover:text-[#b8f600] transition-colors uppercase"
+                className="text-on-surface/50 hover:text-[#e11d48] transition-colors uppercase"
               >
                 Instagram
               </a>
@@ -356,7 +407,7 @@ export default function App() {
                 href="https://wa.me/917297946193"
                 target="_blank"
                 rel="noreferrer"
-                className="text-on-surface/50 hover:text-[#b8f600] transition-colors uppercase"
+                className="text-on-surface/50 hover:text-[#e11d48] transition-colors uppercase"
               >
                 WhatsApp
               </a>
@@ -398,12 +449,12 @@ export default function App() {
                 exit={{ opacity: 0, y: 30, scale: 0.95 }}
                 className="w-80 md:w-96 rounded-3xl border border-zinc-800 bg-zinc-950/95 backdrop-blur-xl shadow-2xl p-5 text-left flex flex-col gap-4 relative overflow-hidden"
                 style={{
-                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(184, 246, 0, 0.05)'
+                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(225, 29, 72, 0.05)'
                 }}
               >
                 {/* Header */}
                 <div className="flex items-center gap-3 pb-3 border-b border-zinc-800">
-                  <div className="h-10 w-10 rounded-full overflow-hidden border border-[#b8f600]/30 shrink-0">
+                  <div className="h-10 w-10 rounded-full overflow-hidden border border-[#e11d48]/30 shrink-0">
                     <img
                       src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEINEtoZzLV9q0y2fBmKlLisO9F4xXcQDvDPMC14M1qbzZITsgPTzVpWrOSPN99Q8AdaFhnGzMRMT2Mn72-xOPbg-vflHfV6GX0yeQRDBL-2WillL0L8KRLwoIaCRbeOeE78FdK7FMY8i7pdmQo4vuC84RXPePnkvlami7YjAbPRPXCam_oJUvyKh--eJJj2s6MN7wAE4W91PuqzzBvxGYOuiUknqSnl1_vmJRGVhGi_G6Dl37Ykl8zYCJNRR_5c9m-uFoqKn43KI"
                       alt="Ishan Portrait"
@@ -413,7 +464,7 @@ export default function App() {
                   <div>
                     <div className="flex items-center gap-1.5">
                       <p className="text-xs font-bold text-white uppercase tracking-wider">Ishan Bajaj</p>
-                      <span className="h-2 w-2 rounded-full bg-lime-500 animate-pulse" />
+                      <span className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
                     </div>
                     <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest">Physique Strategist</p>
                   </div>
@@ -461,7 +512,7 @@ export default function App() {
                         target="_blank"
                         rel="noreferrer"
                         onClick={() => setWhatsAppOpen(false)}
-                        className="w-full flex items-center justify-between bg-zinc-900/60 border border-zinc-800 hover:border-[#b8f600]/30 hover:bg-[#b8f600]/5 text-white/90 hover:text-[#b8f600] px-4 py-2.5 rounded-xl text-[10px] font-mono font-bold tracking-wider transition-all"
+                        className="w-full flex items-center justify-between bg-zinc-900/60 border border-zinc-800 hover:border-[#e11d48]/30 hover:bg-[#e11d48]/5 text-white/90 hover:text-[#fb7185] px-4 py-2.5 rounded-xl text-[10px] font-mono font-bold tracking-wider transition-all"
                       >
                         <span>{opt.label}</span>
                         <ChevronRight className="h-3 w-3" />
